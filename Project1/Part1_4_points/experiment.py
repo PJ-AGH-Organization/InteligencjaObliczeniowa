@@ -6,6 +6,7 @@ Eksperyment: AI vs AI w Tic-Tac-Toe / Tic-tac-doh.
 - Wariant deterministyczny vs probabilistyczny (20% nieudanych ruchów)
 """
 
+import csv
 import random
 from collections import defaultdict
 from easyAI import AI_Player, Negamax
@@ -89,21 +90,24 @@ def main():
                 "moves_failed": moves_failed if probabilistic else 0,
             })
 
-    # Zapis wyników do pliku
-    with open("experiment_results.txt", "w", encoding="utf-8") as f:
-        f.write("Wyniki eksperymentów AI vs AI\n")
-        f.write("=" * 50 + "\n")
+    # Zapis CSV
+    csv_file = "experiment_results.csv"
+    with open(csv_file, "w", newline="", encoding="utf-8") as f:
+        writer = csv.writer(f)
+        writer.writerow(["algorytm", "glebokosc", "wariant", "gracz1_wygrane", "gracz2_wygrane",
+                          "remisy", "lacznie_ruchow", "nieudane_ruchy", "procent_nieudanych"])
         for r in all_results:
-            f.write(f"\nGłębokość={r['depth']}, {r['variant']}\n")
-            f.write(f"  Gracz 1: {r['wins_1']}  Gracz 2: {r['wins_2']}  Remisy: {r['draws']}\n")
-            f.write(f"  Łącznie ruchów: {r['total_moves']}\n")
-            if r["probabilistic"] and r["total_moves"] > 0:
-                pct = 100 * r["moves_failed"] / r["total_moves"]
-                f.write(f"  Nieudane ruchy: {r['moves_failed']} ({pct:.1f}%)\n")
+            pct = f"{100 * r['moves_failed'] / r['total_moves']:.1f}" if r["probabilistic"] and r["total_moves"] > 0 else ""
+            writer.writerow([
+                "Negamax", r["depth"], r["variant"],
+                r["wins_1"], r["wins_2"], r["draws"],
+                r["total_moves"], r["moves_failed"] if r["probabilistic"] else "",
+                pct
+            ])
 
-    print("\n" + "=" * 70)
-    print("Wyniki zapisane do experiment_results.txt")
-    print("=" * 70)
+    print(f"\n{'='*70}")
+    print(f"Wyniki zapisane do {csv_file}")
+    print(f"{'='*70}")
 
 
 if __name__ == "__main__":

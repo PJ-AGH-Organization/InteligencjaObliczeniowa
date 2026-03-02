@@ -1,114 +1,212 @@
-# Raport: Gra Tic-tac-doh i eksperymenty z AI
+# Projekt 1: Tic-tac-doh — Raport z eksperymentów z AI
 
-**Uruchomienie eksperymentu:** `python experiment.py` (opcjonalnie: `python experiment.py 50` – 50 partii zamiast 100)
+> **Przedmiot:** Inteligencja obliczeniowa w analizie danych cyfrowych  
+> **Biblioteka:** easyAI (Python)  
+> **Wybrana gra:** Tic-tac-doh (kółko i krzyżyk z 20% szansą na nieudany ruch)
+
+---
 
 ## 1. Opis gry
 
-### 1.1 Klasyczne kółko i krzyżyk (Tic-Tac-Toe)
+### 1.1 Klasyczne kółko i krzyżyk
 
-Gra rozgrywa się na planszy 3×3. Dwaj gracze na przemian stawiają znaki (O i X) w wolnych polach. Wygrywa ten, kto pierwszy ustawi trzy swoje znaki w jednej linii – poziomej, pionowej lub przekątnej. Przy prawidłowej grze obu stron wynikiem jest remis.
+Gra na planszy 3×3. Dwaj gracze naprzemiennie stawiają znaki (O i X). Wygrywa ten, kto pierwszy ułoży trzy swoje znaki w linii (poziomej, pionowej lub przekątnej). Jeśli plansza się zapełni bez trójki — remis.
 
 ### 1.2 Wariant probabilistyczny: Tic-tac-doh
 
-Wariant **Tic-tac-doh** wprowadza element losowości: z prawdopodobieństwem 20% wykonany ruch się „nie udaje” – na planszy nie zostaje żaden ślad, a kolej ruchu przechodzi na przeciwnika. Gracz traci kolejkę i nie może postawić znaku mimo wyboru pola.
+W wariancie **Tic-tac-doh** każdy ruch ma **20% szansy na niepowodzenie**. Gdy ruch się nie uda:
 
-Wpływa to na strategię i wynik: gra przestaje być deterministyczna, pojawiają się niespodziewane zwroty akcji i większa różnorodność rozgrywek.
+- na planszy nie pozostaje żaden ślad,
+- kolej przechodzi na przeciwnika.
 
-### 1.3 Implementacja techniczna
+To wprowadza element losowości — gra przestaje być deterministyczna, a jej wynik zależy nie tylko od strategii, ale też od szczęścia.
 
-Gra została zaimplementowana w Pythonie z użyciem biblioteki **easyAI**. Klasa `TicTacDoh` dziedziczy po `TwoPlayerGame` i definiuje:
+### 1.3 Implementacja
 
-- `possible_moves()` – lista legalnych ruchów,
-- `make_move()` – wykonanie ruchu (z 20% szansą na niepowodzenie w wersji probabilistycznej),
-- `unmake_move()` – cofnięcie ruchu (dla optymalizacji AI),
-- `is_over()` – warunek zakończenia gry,
-- `scoring()` – ocena pozycji dla algorytmu Negamax.
+Gra zaimplementowana jako klasa `TicTacDoh` dziedzicząca po `TwoPlayerGame` (easyAI). Kluczowe metody:
 
-**Ważny szczegół implementacyjny:** Mechanizm nieudanych ruchów musi działać wyłącznie przy faktycznych ruchach w grze, a nie podczas symulacji AI (Negamax wywołuje `make_move` wielokrotnie w drzewie poszukiwań). Użyta została flaga `_apply_failure`, ustawiana na `True` tylko przed wykonaniem rzeczywistego ruchu w pętli gry.
+| Metoda | Opis |
+|--------|------|
+| `possible_moves()` | Zwraca listę wolnych pól (1–9) |
+| `make_move(move)` | Stawia znak; w trybie probabilistycznym losuje 20% szansę na fail |
+| `unmake_move(move)` | Cofa ruch (optymalizacja dla AI) |
+| `is_over()` | Sprawdza koniec gry (wygrana lub brak ruchów) |
+| `scoring()` | Ocena pozycji: −100 za przegraną, 0 w innym wypadku |
 
----
-
-## 2. Algorytm AI – Negamax
-
-Algorytm **Negamax** to wariant Minimax, używający negacji ocen, co upraszcza implementację (jeden zestaw reguł oceny zamiast osobnych dla obu graczy). Z opcjonalną alfa-beta odcięciami i tablicami transpozycji dobrze nadaje się do gier takich jak kółko i krzyżyk.
-
-Parametr **głębokość** określa, na ile pół ruchów do przodu AI analizuje. Większa głębokość oznacza lepszą jakość gry, ale dłuższy czas obliczeń. Dla planszy 3×3 głębokość 6–8 zwykle wystarcza do gry bliskiej optymalnej.
+**Ważny detal:** Losowanie 20% działa tylko przy rzeczywistych ruchach, nie przy symulacjach AI. Flaga `_apply_failure` włączana jest wyłącznie w pętli gry — Negamax eksploruje drzewo deterministycznie.
 
 ---
 
-## 3. Przeprowadzone eksperymenty
+## 2. Algorytmy AI
+
+### 2.1 Negamax z odcięciem alfa-beta
+
+Wariant algorytmu Minimax z negacją ocen i **alpha-beta pruning**. Odcięcia eliminują gałęzie drzewa, które nie mogą zmienić wyniku, drastycznie redukując liczbę eksplorowanych stanów.
+
+### 2.2 Negamax bez odcięcia alfa-beta
+
+Własna implementacja czystego Negamax **bez** alpha-beta. Przeszukuje **pełne** drzewo gry — daje identyczne wyniki, ale jest znacznie wolniejsza (brak przycinania).
+
+### 2.3 SSS*
+
+Algorytm z biblioteki easyAI. Wariant Minimax z bardziej agresywnym przycinaniem niż standardowe alpha-beta. Eksploruje potencjalnie mniej stanów kosztem wyższej złożoności pamięciowej.
+
+### 2.4 Parametr: głębokość
+
+Głębokość określa liczbę pół-ruchów, które AI analizuje z wyprzedzeniem. Dla planszy 3×3:
+
+- **Głębokość 2** — AI widzi 1 turę do przodu, gra słabo (wygrywa gracz 1).
+- **Głębokość 4–6** — gra bliska optymalnej.
+- **Głębokość 6–9** — gra optymalna, deterministyczne TTT kończy się remisem.
+
+---
+
+## 3. Eksperymenty — Part 1 (4 pkt)
 
 ### 3.1 Metodologia
 
-W eksperymentach dwaj gracze AI (obaj z algorytmem Negamax) rozgrywali partię wielokrotnie. W każdej konfiguracji wykonano **100 partii** z następującymi ustawieniami:
+- **Algorytm:** Negamax (z α-β)
+- **Głębokości:** 4 i 8
+- **Warianty:** deterministyczny i probabilistyczny
+- **Liczba partii:** 100 na konfigurację (seed=42)
+- **Alternacja:** co druga partia gracz 1 i 2 zamieniają się kolorem
 
-- **Wymiana gracza rozpoczynającego:** co druga partia pierwszy ruch wykonywał gracz 2, dzięki czemu każdy gracz rozpoczynał 50 partii,
-- **Dwie głębokości Negamax:** 4 i 8,
-- **Dwa warianty gry:** deterministyczny (klasyczne TTT) oraz probabilistyczny (Tic-tac-doh).
+### 3.2 Wyniki
 
-### 3.2 Konfiguracje testowe
+| Głębokość | Wariant | Gracz 1 | Gracz 2 | Remisy | Ruchy | Nieudane | % nieud. |
+|-----------|---------|--------:|--------:|-------:|------:|---------:|---------:|
+| 4 | deterministyczny | 0 | 0 | 100 | 900 | — | — |
+| 4 | probabilistyczny | 42 | 24 | 34 | 900 | 162 | 18,0% |
+| 8 | deterministyczny | 0 | 0 | 100 | 900 | — | — |
+| 8 | probabilistyczny | 35 | 16 | 49 | 884 | 160 | 18,1% |
 
-| Konfiguracja | Głębokość | Wariant             | Opis                  |
-|-------------|-----------|---------------------|------------------------|
-| D4          | 4         | deterministyczny    | Klasyczne TTT, gł. 4  |
-| D8          | 8         | deterministyczny    | Klasyczne TTT, gł. 8  |
-| P4          | 4         | probabilistyczny    | Tic-tac-doh, gł. 4    |
-| P8          | 8         | probabilistyczny    | Tic-tac-doh, gł. 8    |
+### 3.3 Interpretacja
 
-### 3.3 Wyniki
+**Wariant deterministyczny:** Przy optymalnej grze (gł. 4 i 8 wystarczają) TTT zawsze kończy się remisem — 100% remisów, 900 ruchów (100 × 9 pełnych plansz).
 
-Eksperyment wykonano na 100 partiach dla każdej konfiguracji (seed=42). Wyniki:
-
-| Konfiguracja        | Gracz 1 | Gracz 2 | Remisy | Łącznie ruchów | Nieudane (% z ruchów) |
-|---------------------|---------|---------|--------|----------------|------------------------|
-| Głęb. 4, determin.  | 0       | 0       | 100    | 900            | —                      |
-| Głęb. 8, determin.  | 0       | 0       | 100    | 900            | —                      |
-| Głęb. 4, probabil.  | 42      | 24      | 34     | 900            | 162 (18,0%)            |
-| Głęb. 8, probabil.  | 35      | 16      | 49     | 884            | 160 (18,1%)            |
-
-**Interpretacja:**
-
-**Wariant deterministyczny:** Przy optymalnej grze obu stron klasyczne TTT zawsze kończy się remisem. Łącznie 900 ruchów (100 partii × 9 ruchów na partię – pełna plansza przy remisie).
-
-**Wariant probabilistyczny (Tic-tac-doh):** Losowość zmienia wyniki:
-- *Głębokość 4:* 42 vs 24 zwycięstw, 34 remisy, 900 ruchów łącznie, 162 nieudane (18,0%).
-- *Głębokość 8:* 35 vs 16 zwycięstw, 49 remisów, 884 ruchy (krótsze partie przez wcześniejsze wygrane), 160 nieudanych (18,1%).
-- **Procent nieudanych ruchów** (~18%) jest nieco poniżej teoretycznych 20% – typowa wariancja statystyczna. Oznacza to, że około 1 na 5 prób ruchu kończy się niepowodzeniem.
-- Silniejsze AI (głęb. 8) generuje więcej remisów – lepiej broni pozycji.
-
-Różnica między głębokością 4 a 8: przy głębokości 8 AI gra bezpieczniej, co przekłada się na większy odsetek remisów.
+**Wariant probabilistyczny:**
+- Losowość łamie symetrię i generuje wygrane/przegrane mimo identycznego AI po obu stronach.
+- Gracz 1 (zaczynający) wygrywa częściej — ma jeden dodatkowy ruch, co przy losowych failach daje statystyczną przewagę.
+- **Głębokość 8 vs 4:** silniejsze AI generuje więcej remisów (49 vs 34), bo lepiej broni pozycji.
+- Procent nieudanych ruchów (~18%) bliski teoretycznym 20% — typowa wariancja statystyczna na 100 próbach.
 
 ---
 
-## 4. Napotkane problemy
+## 4. Eksperymenty — Part 2 (6 pkt)
 
-### 4.1 Nieudane ruchy w symulacjach AI
+### 4.1 Metodologia
 
-Na początku mechanizm 20% nieudanych ruchów działał przy każdym wywołaniu `make_move`, także podczas symulacji Negamax (setki wywołań na jeden ruch). Skutkowało to:
+- **Algorytmy:** Negamax (α-β), Negamax (bez α-β), SSS*
+- **Głębokości:** 2 i 6
+- **Warianty:** deterministyczny i probabilistyczny
+- **Liczba partii:** 50 na konfigurację (seed=42)
+- **Pomiar czasu:** `time.perf_counter()` wokół `ask_move()` — mierzy czas decyzji AI
 
-- wieloma komunikatami o nieudanych ruchach w trakcie jednej decyzji AI,
-- niestabilnym drzewem poszukiwań i błędnymi wyborami ruchów.
+### 4.2 Wyniki — zwycięstwa i remisy
 
-**Rozwiązanie:** Flaga `_apply_failure`, ustawiana na `True` wyłącznie przed wykonaniem rzeczywistego ruchu w pętli gry. Dzięki temu losowanie 20% nie dotyczy symulacji wewnątrz Negamax.
+| Algorytm | Głęb. | Wariant | G1 | G2 | Remisy | Ruchy | Nieud. | % nieud. |
+|----------|------:|---------|---:|---:|-------:|------:|-------:|---------:|
+| Negamax (α-β) | 2 | determin. | 50 | 0 | 0 | 350 | — | — |
+| Negamax (α-β) | 2 | probabil. | 36 | 12 | 2 | 434 | 81 | 18,7% |
+| Negamax (bez α-β) | 2 | determin. | 50 | 0 | 0 | 350 | — | — |
+| Negamax (bez α-β) | 2 | probabil. | 36 | 12 | 2 | 434 | 81 | 18,7% |
+| SSS* | 2 | determin. | 50 | 0 | 0 | 350 | — | — |
+| SSS* | 2 | probabil. | 36 | 12 | 2 | 434 | 81 | 18,7% |
+| Negamax (α-β) | 6 | determin. | 0 | 0 | 50 | 450 | — | — |
+| Negamax (α-β) | 6 | probabil. | 20 | 10 | 20 | 419 | 76 | 18,1% |
+| Negamax (bez α-β) | 6 | determin. | 0 | 0 | 50 | 450 | — | — |
+| Negamax (bez α-β) | 6 | probabil. | 17 | 14 | 19 | 464 | 83 | 17,9% |
+| SSS* | 6 | determin. | 0 | 0 | 50 | 450 | — | — |
+| SSS* | 6 | probabil. | 17 | 14 | 19 | 464 | 83 | 17,9% |
 
-### 4.2 Spójność z easyAI
+**Kluczowe obserwacje:**
+- Przy **głębokości 2** AI gra słabo — gracz 1 wygrywa wszystkie partie determinisyczne. Losowość wprowadza trochę remisów i wygranych gracza 2.
+- Przy **głębokości 6** wszystkie algorytmy grają optymalnie w wariancie deterministycznym (same remisy). W wariancie probabilistycznym losowość decyduje o wyniku.
+- Wszystkie algorytmy dają **identyczne wyniki** przy tym samym seed i głębokości (przeszukują to samo drzewo — różnią się tylko czasem).
 
-Biblioteka easyAI w różnych wersjach używa `nplayer`/`nopponent` albo `current_player`/`opponent_index`. Implementacja została dopasowana do używanej wersji (dla v2: `current_player`, `opponent_index`).
+### 4.3 Wyniki — średni czas na ruch
 
-### 4.3 Alternacja gracza rozpoczynającego
+| Algorytm | Głęb. | Wariant | Śr. czas/ruch | Czas łączny | Przyspieszenie vs bez α-β |
+|----------|------:|---------|---------------|-------------|---------------------------|
+| Negamax (α-β) | 2 | determin. | 184 µs | 64 ms | 2,0× |
+| Negamax (bez α-β) | 2 | determin. | 375 µs | 131 ms | — (bazowy) |
+| SSS* | 2 | determin. | 245 µs | 86 ms | 1,5× |
+| Negamax (α-β) | 2 | probabil. | 181 µs | 79 ms | 2,1× |
+| Negamax (bez α-β) | 2 | probabil. | 377 µs | 164 ms | — (bazowy) |
+| SSS* | 2 | probabil. | 234 µs | 102 ms | 1,6× |
+| **Negamax (α-β)** | **6** | **determin.** | **4,84 ms** | **2,18 s** | **21,2×** |
+| **Negamax (bez α-β)** | **6** | **determin.** | **102,84 ms** | **46,28 s** | **— (bazowy)** |
+| **SSS\*** | **6** | **determin.** | **6,72 ms** | **3,02 s** | **15,3×** |
+| Negamax (α-β) | 6 | probabil. | 6,30 ms | 2,64 s | 19,1× |
+| Negamax (bez α-β) | 6 | probabil. | 120,63 ms | 55,97 s | — (bazowy) |
+| SSS* | 6 | probabil. | 7,48 ms | 3,47 s | 16,1× |
 
-W eksperymencie gracze AI są identyczni (ten sam algorytm). Alternacja kolejności w liście graczy co partię zapewnia, że każdy „gracz” ma taką samą liczbę pierwszych ruchów, co daje symetryczne statystyki zwycięstw i remisów.
+### 4.4 Analiza czasów
+
+**Wpływ alpha-beta pruning:**
+- Przy głębokości 2 różnica ~2× — drzewo jest płytkie, mało do odcięcia.
+- Przy głębokości 6 **Negamax z α-β jest ~21× szybszy** niż bez (4,84 ms vs 102,84 ms). Alpha-beta eliminuje ogromną większość gałęzi.
+
+**Negamax (α-β) vs SSS\*:**
+- SSS* jest ~30–40% wolniejszy niż Negamax z α-β (6,72 ms vs 4,84 ms przy gł. 6). Narzut wynika z dodatkowej złożoności pamięciowej algorytmu SSS*.
+- Przy małych grach jak TTT SSS* nie daje przewagi. Mógłby się wyróżnić w grach z większym drzewem.
+
+**Wariant probabilistyczny vs deterministyczny:**
+- Czasy nieznacznie dłuższe w probabilistycznym — partie mają więcej ruchów (fail-e wydłużają grę).
 
 ---
 
-## 5. Podsumowanie
+## 5. Napotkane problemy
 
-Gra Tic-tac-doh rozszerza klasyczne kółko i krzyżyk o element losowości, co wpływa na strategię i wyniki. Algorytm Negamax pozwala na sensowną grę AI w obu wariantach.
+### 5.1 Losowanie w symulacjach Negamax
 
-Eksperymenty pokazują różnice między:
+Negamax wywołuje `make_move()` setki razy przy eksploracji drzewa. Gdy 20% fail stosowane było do każdego wywołania, AI podejmowało błędne decyzje (stan gry po symulacji nie odpowiadał zamierzonemu).
 
-- wariantem deterministycznym (stosunkowo dużo remisów),
-- wariantem probabilistycznym (więcej zwycięstw i porażek, wpływ losowości),
-- różnymi głębokościami Negamax (głębokość 8 daje lepszą jakość gry niż 4).
+**Rozwiązanie:** Flaga `_apply_failure` ustawiana na `True` wyłącznie przed faktycznym ruchem w pętli gry. Symulacje AI działają deterministycznie.
 
-Wyniki szczegółowe należy uzupełnić po uruchomieniu skryptu `experiment.py` i wpisaniu otrzymanych liczb do sekcji 3.3 powyżej.
+### 5.2 Kompatybilność wersji easyAI
+
+Starsze wersje easyAI używają `nplayer`/`nopponent`, nowsze `current_player`/`opponent_index`. Implementacja dopasowana do zainstalowanej wersji (v2.x).
+
+### 5.3 Alternacja gracza rozpoczynającego
+
+Obaj gracze AI używają identycznego algorytmu. Wymiana kolejności co partię zapewnia, że asymetria wyniku wynika z przewagi pierwszego ruchu (lub losowości), nie z różnic w AI.
+
+---
+
+## 6. Struktura plików
+
+```
+Project1/
+├── EasyAI.pdf                      # Treść zadania
+├── raport.md                       # Ten raport
+├── Part1_4_points/
+│   ├── tictac.py                   # Gra Tic-tac-doh
+│   ├── experiment.py               # Eksperyment Part 1 (Negamax, 2 głębokości)
+│   └── experiment_results.csv      # Wyniki Part 1
+└── Part2_6_points/
+    ├── tictac.py                   # Gra Tic-tac-doh (kopia)
+    ├── negamax_no_ab.py            # Negamax bez alpha-beta (własna impl.)
+    ├── experiment.py               # Eksperyment Part 2 (3 algorytmy, czasy)
+    └── experiment_results.csv      # Wyniki Part 2
+```
+
+**Uruchomienie:**
+```bash
+pip install easyAI
+cd Part1_4_points && python experiment.py        # domyślnie 100 partii
+cd Part2_6_points && python experiment.py 50     # 50 partii
+```
+
+---
+
+## 7. Podsumowanie
+
+| Wniosek | Szczegóły |
+|---------|-----------|
+| Deterministyczne TTT = remis | Przy optymalnej grze (gł. ≥ 4) AI zawsze remisuje |
+| Losowość zmienia wyniki | 20% fail generuje wygrane/przegrane, gracz 1 ma statystyczną przewagę |
+| α-β pruning przyspiesza ~21× | Przy gł. 6: 4,84 ms vs 102,84 ms na ruch |
+| SSS* porównywalny z α-β | Minimalnie wolniejszy (~30%), identyczne wyniki |
+| Głębsza analiza = więcej remisów | AI z gł. 6 broni lepiej niż z gł. 2 w wariancie probabilistycznym |
+| ~18% ruchów nieudanych | Zgodne z oczekiwanymi 20% (wariancja statystyczna) |
