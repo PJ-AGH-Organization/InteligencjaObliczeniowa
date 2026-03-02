@@ -1,14 +1,12 @@
 #!/usr/bin/env python3
 """
-Eksperyment Part 2 (6 pkt): porównanie algorytmów AI na Tic-Tac-Toe / Tic-tac-doh.
+Eksperyment Part 3 (8 pkt): Expecti-Minimax z odcięciem α-β.
 
-Porównywane algorytmy:
-  1. Negamax z alpha-beta pruning (easyAI)
-  2. Negamax BEZ alpha-beta pruning (własna impl.)
-  3. SSS* (easyAI)
+Testowany algorytm:
+  ExpectiMinimax (α-β, Star1 pruning) — modeluje chance nodes (20% fail)
 
-Dwie głębokości (2, 6), dwa warianty gry (deterministyczny, probabilistyczny).
-Pomiar średniego czasu wyboru ruchu dla każdego AI.
+Parametry identyczne jak w experiment_6pts.py (głębokości [2, 6], domyślnie 50 gier),
+aby wyniki były bezpośrednio porównywalne z algorytmami z sekcji na 6 pkt.
 """
 
 import csv
@@ -18,10 +16,9 @@ import time
 from collections import defaultdict
 from copy import deepcopy
 
-from easyAI import AI_Player, Negamax
-from easyAI.AI.SSS import SSS
+from easyAI import AI_Player
 
-from negamax_no_ab import NegamaxNoAB
+from expectiminimax import ExpectiMinimax
 from tictac import TicTacDoh
 
 
@@ -29,7 +26,6 @@ def run_single_game(players, probabilistic, verbose=False):
     """
     Jedna rozgrywka z pomiarem czasu.
     Zwraca (winner, total_moves, moves_failed, move_times_by_player).
-    move_times_by_player = {1: [list of times], 2: [list of times]}
     """
     game = TicTacDoh(players, probabilistic=probabilistic)
 
@@ -74,8 +70,6 @@ def run_single_game(players, probabilistic, verbose=False):
 def run_experiment(n_games, algo_factory, probabilistic):
     """
     Uruchamia n_games partii. Gracze zamieniają się kolorem co partię.
-    algo_factory: callable() -> algo_instance (tworzony na nowo per partia)
-    Zwraca: results_dict, total_moves, moves_failed, all_move_times_flat
     """
     results = defaultdict(int)
     total_moves_sum = 0
@@ -115,17 +109,15 @@ def main():
     DEPTHS = [2, 6]
 
     algorithms = {
-        "Negamax (α-β)": lambda d: Negamax(d),
-        "Negamax (bez α-β)": lambda d: NegamaxNoAB(d),
-        "SSS*": lambda d: SSS(d),
+        "ExpectiMinimax (α-β, p=0.2)": lambda d: ExpectiMinimax(d, fail_chance=0.20),
     }
 
     print("=" * 80)
-    print("EKSPERYMENT Part 2: Porównanie algorytmów AI")
+    print("EKSPERYMENT Part 3: Expecti-Minimax z α-β")
     print("=" * 80)
     print(f"Partie na konfigurację: {N_GAMES}")
     print(f"Głębokości: {DEPTHS}")
-    print(f"Algorytmy: {', '.join(algorithms.keys())}")
+    print(f"Algorytm: ExpectiMinimax (α-β, p=0.2)")
     print()
 
     all_results = []
@@ -177,7 +169,7 @@ def main():
                 })
 
     # Zapis CSV
-    csv_file = "experiment_results.csv"
+    csv_file = "experiment_8pts_results.csv"
     with open(csv_file, "w", newline="", encoding="utf-8") as f:
         writer = csv.writer(f)
         writer.writerow([

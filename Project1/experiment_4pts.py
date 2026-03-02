@@ -91,7 +91,7 @@ def main():
             })
 
     # Zapis CSV
-    csv_file = "experiment_results.csv"
+    csv_file = "experiment_4pts_results.csv"
     with open(csv_file, "w", newline="", encoding="utf-8") as f:
         writer = csv.writer(f)
         writer.writerow(["algorytm", "glebokosc", "wariant", "gracz1_wygrane", "gracz2_wygrane",
