@@ -1,0 +1,5 @@
+algorytm,glebokosc,wariant,gracz1_wygrane,gracz2_wygrane,remisy,lacznie_ruchow,nieudane_ruchy,procent_nieudanych
+Negamax,4,Deterministyczny (klasyczne TTT),0,0,100,900,,
+Negamax,4,"Probabilistyczny (Tic-tac-doh, 20% failure)",42,24,34,900,162,18.0
+Negamax,8,Deterministyczny (klasyczne TTT),0,0,100,900,,
+Negamax,8,"Probabilistyczny (Tic-tac-doh, 20% failure)",35,16,49,884,160,18.1

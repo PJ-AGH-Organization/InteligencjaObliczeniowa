@@ -1,0 +1,5 @@
+algorytm,glebokosc,wariant,gracz1_wygrane,gracz2_wygrane,remisy,lacznie_ruchow,nieudane_ruchy,procent_nieudanych,sr_czas_ruch_s,czas_laczny_s,liczba_pomiarow
+"ExpectiMinimax (α-β, p=0.2)",2,Deterministyczny,50,0,0,350,,,0.000522,0.183,350
+"ExpectiMinimax (α-β, p=0.2)",2,Probabilistyczny (20% fail),36,12,2,434,81,18.7,0.000482,0.209,434
+"ExpectiMinimax (α-β, p=0.2)",6,Deterministyczny,0,0,50,450,,,1.816693,817.512,450
+"ExpectiMinimax (α-β, p=0.2)",6,Probabilistyczny (20% fail),19,10,21,434,81,18.7,2.978596,1292.711,434

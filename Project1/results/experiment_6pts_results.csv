@@ -1,0 +1,13 @@
+algorytm,glebokosc,wariant,gracz1_wygrane,gracz2_wygrane,remisy,lacznie_ruchow,nieudane_ruchy,procent_nieudanych,sr_czas_ruch_s,czas_laczny_s,liczba_pomiarow
+Negamax (α-β),2,Deterministyczny,50,0,0,350,,,0.000093,0.032,350
+Negamax (α-β),2,Probabilistyczny (20% fail),36,12,2,434,81,18.7,0.000093,0.040,434
+Negamax (bez α-β),2,Deterministyczny,50,0,0,350,,,0.000204,0.071,350
+Negamax (bez α-β),2,Probabilistyczny (20% fail),36,12,2,434,81,18.7,0.000207,0.090,434
+SSS*,2,Deterministyczny,50,0,0,350,,,0.000124,0.043,350
+SSS*,2,Probabilistyczny (20% fail),36,12,2,434,81,18.7,0.000120,0.052,434
+Negamax (α-β),6,Deterministyczny,0,0,50,450,,,0.002594,1.167,450
+Negamax (α-β),6,Probabilistyczny (20% fail),20,10,20,419,76,18.1,0.003342,1.400,419
+Negamax (bez α-β),6,Deterministyczny,0,0,50,450,,,0.061023,27.460,450
+Negamax (bez α-β),6,Probabilistyczny (20% fail),17,14,19,464,83,17.9,0.072534,33.656,464
+SSS*,6,Deterministyczny,0,0,50,450,,,0.003925,1.766,450
+SSS*,6,Probabilistyczny (20% fail),17,14,19,464,83,17.9,0.004375,2.030,464
