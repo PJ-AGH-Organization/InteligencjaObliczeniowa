@@ -111,11 +111,14 @@ def _expectiminimax(game, depth, orig_depth, scoring, alpha, beta,
                     -beta_f, -alpha_f, fail_chance, score_bounds
                 )
             else:
-                # Pruned — use a heuristic estimate
-                v_fail = -_expectiminimax(
-                    game_fail, depth - 1, orig_depth, scoring,
-                    -beta, -alpha, fail_chance, score_bounds
-                )
+                # Star1 pruning: fail branch pruned — no v_fail in
+                # [min_score, max_score] can place move_value inside
+                # [alpha, beta].  Use a bound-based estimate.
+                move_upper = p_success * v_success + p_fail * max_score
+                if move_upper <= alpha:
+                    v_fail = max_score   # optimistic, still below alpha
+                else:
+                    v_fail = min_score   # pessimistic, still above beta
 
             if unmake_move:
                 game_fail.switch_player()

@@ -97,7 +97,7 @@ Porównanie **Negamax z odcięciem alfa-beta**, **Negamax bez odcięcia alfa-bet
 | SSS\* | Deterministyczny | 0 | 0 | 50 | 3,93 ms |
 | SSS\* | Probabilistyczny | 17 | 14 | 19 | 4,38 ms |
 
-- Wszystkie trzy algorytmy dają identyczne wyniki jakościowe — różnią się jedynie czasem.
+- W wariancie deterministycznym oraz przy głębokości 2 wszystkie algorytmy dają identyczne wyniki jakościowe. Przy głębokości 6 w wariancie probabilistycznym wyniki różnią się nieznacznie (Negamax α-β: 20/10/20 vs Negamax bez α-β i SSS\*: 17/14/19) — przyczyną jest różnica w tie-breakingu: easyAI Negamax korzysta z tablicy transpozycji, która zmienia kolejność oceniania ruchów o identycznej wartości.
 - Odcięcie alfa-beta redukuje czas z 61 ms do 2,59 ms przy głębokości 6 (**23,6×** przyspieszenie), zgodnie z teorią: alfa-beta w najlepszym przypadku redukuje liczbę węzłów z $O(b^d)$ do $O(b^{d/2})$.
 - SSS\* jest nieznacznie wolniejszy od Negamax (α-β) z powodu narzutu pamięciowego utrzymywanej listy otwartych węzłów.
 
@@ -116,8 +116,8 @@ Porównanie **ExpectiMinimax (α-β)** z algorytmami z eksperymentu 2, przy tych
 | Negamax (bez α-β) | Probabilistyczny | 36 | 12 | 2 | 207 µs |
 | SSS\* | Deterministyczny | 50 | 0 | 0 | 124 µs |
 | SSS\* | Probabilistyczny | 36 | 12 | 2 | 120 µs |
-| ExpectiMinimax (α-β) | Deterministyczny | 50 | 0 | 0 | 522 µs |
-| ExpectiMinimax (α-β) | Probabilistyczny | 36 | 12 | 2 | 482 µs |
+| ExpectiMinimax (α-β) | Deterministyczny | 50 | 0 | 0 | 630 µs |
+| ExpectiMinimax (α-β) | Probabilistyczny | 36 | 12 | 2 | 499 µs |
 
 ### Głębokość 6
 
@@ -129,18 +129,18 @@ Porównanie **ExpectiMinimax (α-β)** z algorytmami z eksperymentu 2, przy tych
 | Negamax (bez α-β) | Probabilistyczny | 17 | 14 | 19 | 72,53 ms |
 | SSS\* | Deterministyczny | 0 | 0 | 50 | 3,93 ms |
 | SSS\* | Probabilistyczny | 17 | 14 | 19 | 4,38 ms |
-| ExpectiMinimax (α-β) | Deterministyczny | 0 | 0 | 50 | 1,82 s |
-| ExpectiMinimax (α-β) | Probabilistyczny | 19 | 10 | 21 | 2,98 s |
+| ExpectiMinimax (α-β) | Deterministyczny | 0 | 0 | 50 | 1,46 s |
+| ExpectiMinimax (α-β) | Probabilistyczny | 19 | 10 | 21 | 1,97 s |
 
-- ExpectiMinimax jest znacząco wolniejszy od pozostałych algorytmów — przy głębokości 6 ok. **700×** wolniejszy od Negamax (α-β) i ok. **30×** wolniejszy od Negamax (bez α-β).
-- Przyczyną jest konieczność rozważenia dwóch scenariuszy dla każdego ruchu (sukces i porażka), co efektywnie zwiększa współczynnik rozgałęzienia. Pruning Star1 częściowo ogranicza ten narzut.
+- ExpectiMinimax jest znacząco wolniejszy od pozostałych algorytmów — przy głębokości 6 ok. **590×** wolniejszy od Negamax (α-β) i ok. **27×** wolniejszy od Negamax (bez α-β).
+- Przyczyną jest konieczność rozważenia dwóch scenariuszy dla każdego ruchu (sukces i porażka), co efektywnie zwiększa współczynnik rozgałęzienia. Pruning Star1 częściowo ogranicza ten narzut — odcinając gałęzie porażki, gdy znane granice wartości oczekiwanej wykluczają wpływ na decyzję.
 - Pod względem jakości decyzji w wariancie probabilistycznym ExpectiMinimax uzyskuje 21 remisów przy głębokości 6, wobec 20 dla Negamax (α-β) i 19 dla Negamax (bez α-β) oraz SSS\* — różnice są niewielkie.
 
 # Napotkane problemy
 
 1. **Separacja losowości od symulacji AI** — kluczowe było zapewnienie, że losowość (20% nieudanych ruchów) nie zaburza przeszukiwania drzewa gry. Rozwiązaniem było stosowanie losowego „fail” wyłącznie podczas faktycznego wykonania wybranego ruchu, a nie podczas symulacji stanów w trakcie obliczeń.
 
-2. **Wydajność Expecti-Minimax** — algorytm jest ~700× wolniejszy od Negamax przy głębokości 6 (2,98 s vs 3,34 ms na ruch). W praktyce przekłada się to na bardzo duży czas łączny obliczeń: dla konfiguracji probabilistycznej (50 gier) suma czasów wyboru ruchu wyniosła ok. 1293 s (≈ 21,5 min). Podwójne rozgałęzienie na każdym węźle (sukces/porażka) dramatycznie zwiększa liczbę odwiedzanych węzłów. Mimo zastosowania pruningu Star1, narzut ten jest trudny do uniknięcia, co ogranicza maksymalną użyteczną głębokość przeszukiwania.
+2. **Wydajność Expecti-Minimax** — algorytm jest ~590× wolniejszy od Negamax przy głębokości 6 (1,97 s vs 3,34 ms na ruch). W praktyce przekłada się to na duży czas łączny obliczeń: dla konfiguracji probabilistycznej (50 gier) suma czasów wyboru ruchu wyniosła ok. 856 s (≈ 14 min). Podwójne rozgałęzienie na każdym węźle (sukces/porażka) dramatycznie zwiększa liczbę odwiedzanych węzłów. Mimo zastosowania pruningu Star1, narzut ten jest trudny do uniknięcia, co ogranicza maksymalną użyteczną głębokość przeszukiwania.
 
 3. **Zgodność interfejsów** — własne implementacje algorytmów musiały być zgodne z interfejsem biblioteki wykorzystywanym do rozgrywek AI vs AI.
 
@@ -154,6 +154,6 @@ Kluczowe wnioski:
 - **Odcięcie alfa-beta** jest krytyczną optymalizacją — przyspiesza przeszukiwanie od 2× (głębokość 2) do ponad 23× (głębokość 6), bez wpływu na jakość decyzji.
 - **SSS\*** nie oferuje istotnej przewagi nad Negamax z alfa-beta w kontekście Tic-tac-doh — jest nieco wolniejszy i daje identyczne wyniki.
 - **Głębsze przeszukiwanie** poprawia wyniki w wariancie probabilistycznym — AI lepiej kompensuje losowe porażki ruchów.
-- **Expecti-Minimax** jako jedyny algorytm explicite modeluje losowość w drzewie gry. Osiąga nieznacznie lepsze wyniki w wariancie probabilistycznym (więcej remisów), ale kosztem dramatycznie większego czasu obliczeń (~700× wolniejszy od Negamax z alfa-beta przy głębokości 6). W najbardziej kosztownej konfiguracji (głębokość 6, wariant probabilistyczny) łączny czas obliczeń dla 50 gier był rzędu kilkudziesięciu minut, co istotnie ogranicza praktyczne zastosowanie algorytmu dla większych głębokości.
+- **Expecti-Minimax** jako jedyny algorytm explicite modeluje losowość w drzewie gry. Osiąga nieznacznie lepsze wyniki w wariancie probabilistycznym (więcej remisów), ale kosztem dramatycznie większego czasu obliczeń (~590× wolniejszy od Negamax z alfa-beta przy głębokości 6). W najbardziej kosztownej konfiguracji (głębokość 6, wariant probabilistyczny) łączny czas obliczeń dla 50 gier wyniósł ok. 14 minut, co istotnie ogranicza praktyczne zastosowanie algorytmu dla większych głębokości.
 - W kontekście Tic-tac-doh, ze względu na stosunkowo płytkie drzewo gry (maks. 9 ruchów), różnice w jakości decyzji między Negamax (α-β) a Expecti-Minimax nie są znaczące. Algorytm Expecti-Minimax miałby większy wpływ w grach z głębszym drzewem i wyższym prawdopodobieństwem losowych zdarzeń.
 

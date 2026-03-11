@@ -31,18 +31,17 @@ def run_experiment(n_games, depth, probabilistic, verbose=False):
     Uruchamia n_games partii. Gracze zamieniają się kolorem co partię.
     Zwraca: {1: wins, 2: wins, 0: draws}, total_moves, moves_failed_total
     """
-    ai_algo = Negamax(depth)
     results = defaultdict(int)
     total_moves_sum = 0
     moves_failed_total = 0
 
     for i in range(n_games):
-        # Zamiana gracza rozpoczynającego: parzyste = gracz 1 startuje, nieparzyste = gracz 2
+        algo1 = Negamax(depth)
+        algo2 = Negamax(depth)
         if i % 2 == 0:
-            players = [AI_Player(ai_algo), AI_Player(ai_algo)]
+            players = [AI_Player(algo1), AI_Player(algo2)]
         else:
-            players = [AI_Player(ai_algo), AI_Player(ai_algo)]
-            players = [players[1], players[0]]
+            players = [AI_Player(algo2), AI_Player(algo1)]
 
         winner, total_moves, moves_failed = run_single_game(players, probabilistic, verbose)
         results[winner] += 1
