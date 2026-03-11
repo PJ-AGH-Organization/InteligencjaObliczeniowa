@@ -1,20 +1,10 @@
----
-title: "Projekt 1: EasyAI — Tic-tac-doh"
-subtitle: "Inteligencja Obliczeniowa, Semestr 6"
-author:
-  - "Imię i nazwisko (nr indeksu)"
-  - "Imię i nazwisko (nr indeksu)"
-date: "10 marca 2026"
-geometry: margin=2.5cm
-fontsize: 11pt
-lang: pl
-toc: true
-numbersections: true
-header-includes:
-  - \usepackage{booktabs}
-  - \usepackage{float}
-  - \floatplacement{table}{H}
----
+# Projekt 1: EasyAI — Tic-tac-doh
+
+## Authors
+  - Patrick Bajorski
+  - Jan Banasik
+
+<br>
 
 # Wprowadzenie
 
@@ -63,23 +53,11 @@ Odcięcie alfa-beta na węzłach losowych wykorzystuje technikę **Star1 pruning
 
 # Eksperymenty
 
-Eksperymenty polegały na wielokrotnym rozgrywaniu partii **AI vs AI**, z wymianą gracza rozpoczynającego co partię, w celu zbadania:
+We wszystkich eksperymentach gracze AI rozgrywają partie **AI vs AI** z wymianą gracza rozpoczynającego co partię. Ziarno generatora losowego ustawiono na 42. Implementacja: Python ≥ 3.11, biblioteka EasyAI.
 
-1. Wpływu probabilistyczności na wyniki gry.
-2. Wpływu głębokości przeszukiwania na jakość gry.
-3. Różnic wydajnościowych (czas obliczenia ruchu) między algorytmami.
-4. Różnic w skuteczności algorytmu uwzględniającego losowość (Expecti-Minimax) względem algorytmów deterministycznych.
+## Eksperyment 1: Negamax — porównanie głębokości przeszukiwania
 
-Wszystkie eksperymenty uruchomiono z ustalonym ziarnem generatora losowego (42) dla powtarzalności wyników.
-
-## Środowisko oraz powtarzalność
-
-- Implementacja: Python (wymagane co najmniej 3.11), biblioteka EasyAI.
-- Wartości czasów mają charakter zależny od sprzętu i obciążenia systemu; w analizie kluczowe są relacje (porządki wielkości) pomiędzy algorytmami oraz wpływ głębokości przeszukiwania.
-
-## Wpływ głębokości Negamax na wyniki gry
-
-Pierwszy eksperyment porównuje algorytm Negamax (z odcięciem alfa-beta) przy dwóch głębokościach przeszukiwania: **4** i **8**, na obu wariantach gry. Rozegrano **100 partii** na konfigurację.
+Algorytm Negamax (z odcięciem alfa-beta) uruchamiany przy dwóch głębokościach (**4** i **8**) na wariancie deterministycznym i probabilistycznym. Rozegrano **100 partii** na konfigurację.
 
 | Głębokość | Wariant | Gracz 1 | Gracz 2 | Remisy |
 |:---------:|:--------|--------:|--------:|-------:|
@@ -88,106 +66,75 @@ Pierwszy eksperyment porównuje algorytm Negamax (z odcięciem alfa-beta) przy d
 | 8 | Deterministyczny | 0 | 0 | 100 |
 | 8 | Probabilistyczny | 35 | 16 | 49 |
 
-**Obserwacje:**
-
-- W wariancie **deterministycznym** wszystkie partie kończą się remisem, niezależnie od głębokości. Tic-tac-toe jest grą o pełnej informacji z optymalnym rozwiązaniem remisowym, a głębokość 4 jest już wystarczająca, by AI grało bezbłędnie.
-- W wariancie **probabilistycznym** losowość powoduje, że wiele partii kończy się wygraną jednego z graczy. Gracz 1 (rozpoczynający) wygrywa częściej, co jest przewagą wynikającą z inicjatywy.
-- Przy **głębokości 8** Negamax gra lepiej niż przy głębokości 4 w wariancie probabilistycznym — więcej remisów (49 vs 34), co oznacza, że AI rzadziej popełnia błędy, nawet gdy ruch się nie uda. Głębsze przeszukiwanie pozwala lepiej kompensować nieudane ruchy.
-- W obu wariantach probabilistycznych procent nieudanych ruchów oscyluje wokół oczekiwanych 20% (18,0% i 18,1%), co potwierdza poprawność implementacji.
+- W wariancie **deterministycznym** głębokość 4 wystarczy do optymalnej gry — wszystkie partie kończą się remisem.
+- W wariancie **probabilistycznym** losowość powoduje zwycięstwa; przy głębszym przeszukiwaniu (głębokość 8) AI lepiej kompensuje nieudane ruchy — więcej remisów (49 vs 34).
+- Procent nieudanych ruchów w obu konfiguracjach probabilistycznych wynosi ~18%, zgodnie z oczekiwanymi 20%.
 
 
-## Porównanie algorytmów: wydajność i czas
+## Eksperyment 2: Porównanie algorytmów z pomiarem czasu
 
-Drugi eksperyment porównuje **cztery algorytmy** na obu wariantach gry, z głębokościami przeszukiwania **2** i **6**. Rozegrano **50 partii** na konfigurację.
-
-**Metodyka pomiaru czasu.** Czas wyboru ruchu mierzono jako czas wykonania procedury wyboru ruchu dla aktualnego gracza (z użyciem zegara o wysokiej rozdzielczości), a następnie uśredniano po wszystkich ruchach ze wszystkich partii (dla obu graczy). W tabelach podano średni czas „na ruch”; pomocniczo analizowano również czas łączny i liczbę próbek (równą liczbie wykonanych ruchów w danej konfiguracji).
+Porównanie **Negamax z odcięciem alfa-beta**, **Negamax bez odcięcia alfa-beta** oraz **SSS\*** przy głębokościach **2** i **6**, na obu wariantach gry. Rozegrano **50 partii** na konfigurację. Czas mierzony jako średni czas wyboru ruchu (zegar wysokiej rozdzielczości), uśredniony po wszystkich ruchach ze wszystkich partii.
 
 ### Głębokość 2
 
 | Algorytm | Wariant | G1 | G2 | Rem | Śr. czas/ruch |
 |:---------|:--------|---:|---:|----:|---------------:|
-| Negamax (α-β) | Deter. | 50 | 0 | 0 | 93 µs |
-| Negamax (α-β) | Prob. | 36 | 12 | 2 | 93 µs |
-| Negamax (bez α-β) | Deter. | 50 | 0 | 0 | 204 µs |
-| Negamax (bez α-β) | Prob. | 36 | 12 | 2 | 207 µs |
-| SSS\* | Deter. | 50 | 0 | 0 | 124 µs |
-| SSS\* | Prob. | 36 | 12 | 2 | 120 µs |
-| ExpectiMinimax (α-β) | Deter. | 50 | 0 | 0 | 522 µs |
-| ExpectiMinimax (α-β) | Prob. | 36 | 12 | 2 | 482 µs |
+| Negamax (α-β) | Deterministyczny | 50 | 0 | 0 | 93 µs |
+| Negamax (α-β) | Probabilistyczny | 36 | 12 | 2 | 93 µs |
+| Negamax (bez α-β) | Deterministyczny | 50 | 0 | 0 | 204 µs |
+| Negamax (bez α-β) | Probabilistyczny | 36 | 12 | 2 | 207 µs |
+| SSS\* | Deterministyczny | 50 | 0 | 0 | 124 µs |
+| SSS\* | Probabilistyczny | 36 | 12 | 2 | 120 µs |
 
 ### Głębokość 6
 
 | Algorytm | Wariant | G1 | G2 | Rem | Śr. czas/ruch |
 |:---------|:--------|---:|---:|----:|---------------:|
-| Negamax (α-β) | Deter. | 0 | 0 | 50 | 2,59 ms |
-| Negamax (α-β) | Prob. | 20 | 10 | 20 | 3,34 ms |
-| Negamax (bez α-β) | Deter. | 0 | 0 | 50 | 61,02 ms |
-| Negamax (bez α-β) | Prob. | 17 | 14 | 19 | 72,53 ms |
-| SSS\* | Deter. | 0 | 0 | 50 | 3,93 ms |
-| SSS\* | Prob. | 17 | 14 | 19 | 4,38 ms |
-| ExpectiMinimax (α-β) | Deter. | 0 | 0 | 50 | 1,82 s |
-| ExpectiMinimax (α-β) | Prob. | 19 | 10 | 21 | 2,98 s |
+| Negamax (α-β) | Deterministyczny | 0 | 0 | 50 | 2,59 ms |
+| Negamax (α-β) | Probabilistyczny | 20 | 10 | 20 | 3,34 ms |
+| Negamax (bez α-β) | Deterministyczny | 0 | 0 | 50 | 61,02 ms |
+| Negamax (bez α-β) | Probabilistyczny | 17 | 14 | 19 | 72,53 ms |
+| SSS\* | Deterministyczny | 0 | 0 | 50 | 3,93 ms |
+| SSS\* | Probabilistyczny | 17 | 14 | 19 | 4,38 ms |
+
+- Wszystkie trzy algorytmy dają identyczne wyniki jakościowe — różnią się jedynie czasem.
+- Odcięcie alfa-beta redukuje czas z 61 ms do 2,59 ms przy głębokości 6 (**23,6×** przyspieszenie), zgodnie z teorią: alfa-beta w najlepszym przypadku redukuje liczbę węzłów z $O(b^d)$ do $O(b^{d/2})$.
+- SSS\* jest nieznacznie wolniejszy od Negamax (α-β) z powodu narzutu pamięciowego utrzymywanej listy otwartych węzłów.
 
 
-## Analiza wydajności algorytmów
+## Eksperyment 3: Expecti-Minimax z odcięciem alfa-beta
 
-### Wpływ odcięcia alfa-beta
+Porównanie **ExpectiMinimax (α-β)** z algorytmami z eksperymentu 2, przy tych samych ustawieniach (głębokości **2** i **6**, **50 partii** na konfigurację).
 
-Porównanie Negamax z i bez odcięcia alfa-beta wyraźnie pokazuje wartość tej optymalizacji:
+### Głębokość 2
 
-| Głębokość | Bez α-β | Z α-β | Przyspieszenie |
-|:---------:|--------:|------:|:--------------:|
-| 2 | 204 µs | 93 µs | **2,2×** |
-| 6 | 61,02 ms | 2,59 ms | **23,6×** |
+| Algorytm | Wariant | G1 | G2 | Rem | Śr. czas/ruch |
+|:---------|:--------|---:|---:|----:|---------------:|
+| Negamax (α-β) | Deterministyczny | 50 | 0 | 0 | 93 µs |
+| Negamax (α-β) | Probabilistyczny | 36 | 12 | 2 | 93 µs |
+| Negamax (bez α-β) | Deterministyczny | 50 | 0 | 0 | 204 µs |
+| Negamax (bez α-β) | Probabilistyczny | 36 | 12 | 2 | 207 µs |
+| SSS\* | Deterministyczny | 50 | 0 | 0 | 124 µs |
+| SSS\* | Probabilistyczny | 36 | 12 | 2 | 120 µs |
+| ExpectiMinimax (α-β) | Deterministyczny | 50 | 0 | 0 | 522 µs |
+| ExpectiMinimax (α-β) | Probabilistyczny | 36 | 12 | 2 | 482 µs |
 
-Przyspieszenie rośnie wykładniczo z głębokością. Przy głębokości 6 odcięcie alfa-beta jest **ponad 23-krotnie szybsze**, ponieważ eliminuje znaczną część drzewa gry. Jest to zgodne z teorią — odcięcie alfa-beta w najlepszym przypadku redukuje liczbę odwiedzanych węzłów z $O(b^d)$ do $O(b^{d/2})$, gdzie $b$ to współczynnik rozgałęzienia, a $d$ to głębokość.
+### Głębokość 6
 
-### SSS* vs Negamax (α-β)
+| Algorytm | Wariant | G1 | G2 | Rem | Śr. czas/ruch |
+|:---------|:--------|---:|---:|----:|---------------:|
+| Negamax (α-β) | Deterministyczny | 0 | 0 | 50 | 2,59 ms |
+| Negamax (α-β) | Probabilistyczny | 20 | 10 | 20 | 3,34 ms |
+| Negamax (bez α-β) | Deterministyczny | 0 | 0 | 50 | 61,02 ms |
+| Negamax (bez α-β) | Probabilistyczny | 17 | 14 | 19 | 72,53 ms |
+| SSS\* | Deterministyczny | 0 | 0 | 50 | 3,93 ms |
+| SSS\* | Probabilistyczny | 17 | 14 | 19 | 4,38 ms |
+| ExpectiMinimax (α-β) | Deterministyczny | 0 | 0 | 50 | 1,82 s |
+| ExpectiMinimax (α-β) | Probabilistyczny | 19 | 10 | 21 | 2,98 s |
 
-SSS\* jest nieznacznie wolniejszy od Negamax z alfa-beta:
-
-| Głębokość | Negamax (α-β) | SSS\* | Stosunek |
-|:---------:|--------------:|------:|:--------:|
-| 2 | 93 µs | 124 µs | 1,3× |
-| 6 | 2,59 ms | 3,93 ms | 1,5× |
-
-SSS\* wymaga dodatkowej pamięci do utrzymania listy otwartych węzłów, co wprowadza narzut. W praktyce, dla Tic-tac-doh, nie oferuje przewagi nad Negamax z alfa-beta.
-
-### ExpectiMinimax vs Negamax (α-β)
-
-ExpectiMinimax jest znacząco wolniejszy, ponieważ dla każdego ruchu musi zbadać dwa scenariusze (sukces + porażka):
-
-| Głębokość | Negamax (α-β) | ExpectiMinimax | Stosunek |
-|:---------:|--------------:|---------------:|:--------:|
-| 2 | 93 µs | 522 µs | **5,6×** |
-| 6 | 2,59 ms | 1,82 s | **700×** |
-
-Dramatyczny wzrost kosztów przy głębokości 6 wynika z tego, że **każdy ruch** wymaga rozważenia dodatkowego scenariusza (sukces/porażka), co w praktyce zwiększa efektywny współczynnik rozgałęzienia drzewa. W konsekwencji liczba ocenianych stanów rośnie bardzo szybko wraz z głębokością, chociaż pruning Star1 częściowo ogranicza ten efekt.
-
-
-## Analiza jakości decyzji
-
-### Wariant deterministyczny
-
-W wariancie deterministycznym przy głębokości 6 wszystkie algorytmy osiągają taki sam wynik — **100% remisów**. Oznacza to, że głębokość 6 jest wystarczająca, aby każdy z algorytmów grał optymalnie.
-
-Przy głębokości 2 wszystkie algorytmy dają identyczny wynik (Gracz 1 wygrywa 50 gier na 50), co sugeruje, że Gracz 2 gra suboptmalnie z powodu zbyt płytkiego przeszukiwania.
-
-### Wariant probabilistyczny
-
-W wariancie probabilistycznym pojawiają się różnice:
-
-| Algorytm (głęb. 6) | Gracz 1 | Gracz 2 | Remisy |
-|:--------------------|--------:|--------:|-------:|
-| Negamax (α-β) | 20 | 10 | **20** |
-| Negamax (bez α-β) | 17 | 14 | **19** |
-| SSS\* | 17 | 14 | **19** |
-| ExpectiMinimax (α-β) | 19 | 10 | **21** |
-
-ExpectiMinimax (21 remisów) osiąga porównywalne wyniki do Negamax z alfa-beta (20 remisów), oba lepsze od Negamax bez alfa-beta i SSS\* (po 19 remisów). Więcej remisów oznacza lepszą obronę — AI potrafi zminimalizować wpływ losowości na wynik.
-
-Warto zauważyć, że **Negamax bez alfa-beta** i **SSS\*** dają identyczne wyniki pod względem wygranych/przegranych/remisów, co jest zgodne z oczekiwaniami — oba przeszukują drzewo w pełni (lub zbliżonej do pełnej) i podejmują identyczne decyzje.
-
+- ExpectiMinimax jest znacząco wolniejszy od pozostałych algorytmów — przy głębokości 6 ok. **700×** wolniejszy od Negamax (α-β) i ok. **30×** wolniejszy od Negamax (bez α-β).
+- Przyczyną jest konieczność rozważenia dwóch scenariuszy dla każdego ruchu (sukces i porażka), co efektywnie zwiększa współczynnik rozgałęzienia. Pruning Star1 częściowo ogranicza ten narzut.
+- Pod względem jakości decyzji w wariancie probabilistycznym ExpectiMinimax uzyskuje 21 remisów przy głębokości 6, wobec 20 dla Negamax (α-β) i 19 dla Negamax (bez α-β) oraz SSS\* — różnice są niewielkie.
 
 # Napotkane problemy
 
