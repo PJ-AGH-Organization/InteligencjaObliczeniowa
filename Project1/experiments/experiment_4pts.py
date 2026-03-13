@@ -1,10 +1,4 @@
 #!/usr/bin/env python3
-"""
-Eksperyment: AI vs AI w Tic-Tac-Toe / Tic-tac-doh.
-- Wielokrotne rozgrywki z wymianą gracza rozpoczynającego
-- Porównanie dwóch głębokości Negamax
-- Wariant deterministyczny vs probabilistyczny (20% nieudanych ruchów)
-"""
 
 import csv
 import os
@@ -19,7 +13,6 @@ from tictac import TicTacDoh
 
 
 def run_single_game(players, probabilistic, verbose=False):
-    """Jedna rozgrywka. Zwraca (winner, total_moves, moves_failed)."""
     game = TicTacDoh(players, probabilistic=probabilistic)
     game.play(nmoves=100, verbose=verbose)
     winner = game.get_winner()
@@ -27,10 +20,6 @@ def run_single_game(players, probabilistic, verbose=False):
 
 
 def run_experiment(n_games, depth, probabilistic, verbose=False):
-    """
-    Uruchamia n_games partii. Gracze zamieniają się kolorem co partię.
-    Zwraca: {1: wins, 2: wins, 0: draws}, total_moves, moves_failed_total
-    """
     results = defaultdict(int)
     total_moves_sum = 0
     moves_failed_total = 0
@@ -53,8 +42,8 @@ def run_experiment(n_games, depth, probabilistic, verbose=False):
 
 def main():
     
-    N_GAMES = int(sys.argv[1]) if len(sys.argv) > 1 else 100  # np. python experiment.py 50
-    DEPTHS = [4, 8]  # dwie głębokości do porównania
+    N_GAMES = int(sys.argv[1]) if len(sys.argv) > 1 else 100
+    DEPTHS = [4, 8]
 
     print("=" * 70)
     print("EKSPERYMENT: AI vs AI - Tic-Tac-Toe / Tic-tac-doh")
@@ -93,7 +82,6 @@ def main():
                 "moves_failed": moves_failed if probabilistic else 0,
             })
 
-    # Zapis CSV
     results_dir = os.path.join(os.path.dirname(__file__), "..", "results")
     os.makedirs(results_dir, exist_ok=True)
     csv_file = os.path.join(results_dir, "experiment_4pts_results.csv")

@@ -1,14 +1,6 @@
-"""
-Negamax WITHOUT alpha-beta pruning.
-Same interface as easyAI's Negamax so it can be used with AI_Player.
-"""
-
 inf = float("infinity")
 
-
 def _negamax_no_ab(game, depth, orig_depth, scoring):
-    """Pure negamax without alpha-beta cutoffs — explores the full game tree."""
-
     if (depth == 0) or game.is_over():
         score = scoring(game)
         if score == 0:
@@ -46,20 +38,7 @@ def _negamax_no_ab(game, depth, orig_depth, scoring):
 
     return best_value
 
-
 class NegamaxNoAB:
-    """
-    Negamax without alpha-beta pruning.
-    Drop-in replacement for easyAI.Negamax — use with AI_Player.
-
-    Parameters
-    ----------
-    depth : int
-        How many moves ahead the AI analyses.
-    scoring : callable, optional
-        f(game) -> score. Uses game.scoring() if None.
-    """
-
     def __init__(self, depth, scoring=None):
         self.depth = depth
         self.scoring = scoring

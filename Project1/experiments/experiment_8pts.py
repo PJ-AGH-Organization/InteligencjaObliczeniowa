@@ -1,13 +1,4 @@
 #!/usr/bin/env python3
-"""
-Eksperyment Part 3 (8 pkt): Expecti-Minimax z odcięciem α-β.
-
-Testowany algorytm:
-  ExpectiMinimax (α-β, Star1 pruning) — modeluje chance nodes (20% fail)
-
-Parametry identyczne jak w experiment_6pts.py (głębokości [2, 6], domyślnie 50 gier),
-aby wyniki były bezpośrednio porównywalne z algorytmami z sekcji na 6 pkt.
-"""
 
 import csv
 import os
@@ -26,10 +17,6 @@ from tictac import TicTacDoh
 
 
 def run_single_game(players, probabilistic, verbose=False):
-    """
-    Jedna rozgrywka z pomiarem czasu.
-    Zwraca (winner, total_moves, moves_failed, move_times_by_player).
-    """
     game = TicTacDoh(players, probabilistic=probabilistic)
 
     history = []
@@ -71,9 +58,6 @@ def run_single_game(players, probabilistic, verbose=False):
 
 
 def run_experiment(n_games, algo_factory, probabilistic):
-    """
-    Uruchamia n_games partii. Gracze zamieniają się kolorem co partię.
-    """
     results = defaultdict(int)
     total_moves_sum = 0
     moves_failed_total = 0
@@ -171,7 +155,6 @@ def main():
                     "n_time_samples": len(all_times),
                 })
 
-    # Zapis CSV
     results_dir = os.path.join(os.path.dirname(__file__), "..", "results")
     os.makedirs(results_dir, exist_ok=True)
     csv_file = os.path.join(results_dir, "experiment_8pts_results.csv")

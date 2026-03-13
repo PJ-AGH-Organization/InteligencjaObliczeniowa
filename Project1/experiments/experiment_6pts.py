@@ -1,15 +1,4 @@
 #!/usr/bin/env python3
-"""
-Eksperyment Part 2 (6 pkt): porównanie algorytmów AI na Tic-Tac-Toe / Tic-tac-doh.
-
-Porównywane algorytmy:
-  1. Negamax z alpha-beta pruning (easyAI)
-  2. Negamax BEZ alpha-beta pruning (własna impl.)
-  3. SSS* (easyAI)
-
-Dwie głębokości (2, 6), dwa warianty gry (deterministyczny, probabilistyczny).
-Pomiar średniego czasu wyboru ruchu dla każdego AI.
-"""
 
 import csv
 import os
@@ -29,11 +18,6 @@ from tictac import TicTacDoh
 
 
 def run_single_game(players, probabilistic, verbose=False):
-    """
-    Jedna rozgrywka z pomiarem czasu.
-    Zwraca (winner, total_moves, moves_failed, move_times_by_player).
-    move_times_by_player = {1: [list of times], 2: [list of times]}
-    """
     game = TicTacDoh(players, probabilistic=probabilistic)
 
     history = []
@@ -75,11 +59,6 @@ def run_single_game(players, probabilistic, verbose=False):
 
 
 def run_experiment(n_games, algo_factory, probabilistic):
-    """
-    Uruchamia n_games partii. Gracze zamieniają się kolorem co partię.
-    algo_factory: callable() -> algo_instance (tworzony na nowo per partia)
-    Zwraca: results_dict, total_moves, moves_failed, all_move_times_flat
-    """
     results = defaultdict(int)
     total_moves_sum = 0
     moves_failed_total = 0
@@ -179,7 +158,6 @@ def main():
                     "n_time_samples": len(all_times),
                 })
 
-    # Zapis CSV
     results_dir = os.path.join(os.path.dirname(__file__), "..", "results")
     os.makedirs(results_dir, exist_ok=True)
     csv_file = os.path.join(results_dir, "experiment_6pts_results.csv")
