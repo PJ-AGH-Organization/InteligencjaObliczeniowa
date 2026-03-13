@@ -1,6 +1,6 @@
 # Projekt 1: EasyAI — Tic-tac-doh
 
-## Authors
+## Autorzy
   - Patrick Bajorski
   - Jan Banasik
 
