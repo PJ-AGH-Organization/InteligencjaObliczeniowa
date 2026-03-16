@@ -1,0 +1,15 @@
+(define (problem blocksworld5-instance)
+  (:domain blocksworld)
+  (:init (and
+    (block a) (block b) (block c) (block d) (block e)
+    (table x)
+    (on a x) (on b x) (on c a) (on d x) (on e d)
+    (clear b) (clear c) (clear e)
+  ))
+  (:goal (and
+    (on a b)
+    (on b c)
+    (on c x)
+    (on e x)
+  ))
+)
