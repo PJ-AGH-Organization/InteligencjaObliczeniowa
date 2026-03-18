@@ -3,8 +3,8 @@
 Examples (from repo root):
 - Solve all problems and generate visualizations:
     uv run python -m Project2.blocksworld5_4_points --viz
-- Solve only problem2 with mismatch heuristic:
-    uv run python -m Project2.blocksworld5_4_points --problem problem2 --heur mismatch --viz
+- Solve only problem2 without heuristic:
+    uv run python -m Project2.blocksworld5_4_points --problem problem2 --heur zero --viz
 """
 
 from __future__ import annotations
