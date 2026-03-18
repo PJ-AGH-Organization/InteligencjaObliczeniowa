@@ -1,14 +1,11 @@
 """Entry point for `python -m Project2.blocksworld5_4_points`.
 
-Examples (from repo root):
-- Solve all problems and generate visualizations:
-    uv run python -m Project2.blocksworld5_4_points --viz
-- Solve only problem2 without heuristic:
-    uv run python -m Project2.blocksworld5_4_points --problem problem2 --heur zero --viz
-- Solve with subgoals (6-point requirement):
-    uv run python -m Project2.blocksworld5_4_points --subgoals
-- Solve large problems with subgoals (8-point requirement):
-    uv run python -m Project2.blocksworld5_4_points --large --subgoals
+Examples:
+- Solve all small problems:     uv run python -m Project2.blocksworld5_4_points
+- Solve with subgoals:          uv run python -m Project2.blocksworld5_4_points --subgoals
+- Solve large problems:         uv run python -m Project2.blocksworld5_4_points --large --subgoals
+- Generate visualizations:      uv run python -m Project2.blocksworld5_4_points --viz
+- Without heuristic:            uv run python -m Project2.blocksworld5_4_points --heur zero
 """
 
 from __future__ import annotations
@@ -16,11 +13,14 @@ from __future__ import annotations
 import argparse
 from pathlib import Path
 
-from .heuristics import goal_mismatch_heur
-from .problems import make_domain, make_problems
-from .problems_8_points import make_large_domain, make_large_problems
-from .solve import extract_state_assignments, reachable_state_count, solve_forward, solve_with_subgoals
-from .subgoals import get_subgoals
+from .problems import make_domain, make_problems, make_large_domain, make_large_problems, get_subgoals
+from .solve import (
+    goal_mismatch_heur,
+    extract_state_assignments,
+    reachable_state_count,
+    solve_forward,
+    solve_with_subgoals,
+)
 from .viz import save_solution_path_images
 
 
