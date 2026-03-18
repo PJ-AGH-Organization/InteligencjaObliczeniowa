@@ -9,13 +9,14 @@ from typing import Callable, Dict, List, Optional, Set, Tuple
 
 import Project2  # noqa: F401
 
-from stripsProblem import Planning_problem
+from stripsProblem import Planning_problem, STRIPS_domain
 from stripsForwardPlanner import Forward_STRIPS
 from searchMPP import SearcherMPP
 
 StateAssignment = Dict[str, object]
 Goal = Dict[str, object]
 Heuristic = Callable[[StateAssignment, Goal], float]
+SubgoalList = List[Goal]
 
 
 def extract_action_names(path) -> List[str]:
@@ -83,3 +84,87 @@ def solve_forward(problem: Planning_problem, heur: Optional[Heuristic] = None) -
         return SolveResult(False, None, None, searcher.num_expanded, dt, None)
 
     return SolveResult(True, extract_action_names(path), path.cost, searcher.num_expanded, dt, path)
+
+
+@dataclass(frozen=True)
+class SubgoalSolveResult:
+    """Result of solving a problem with subgoals."""
+
+    solved: bool
+    total_plan: Optional[List[str]]
+    total_cost: Optional[float]
+    total_expanded: int
+    total_seconds: float
+    subgoal_results: List[SolveResult]
+    paths: List[object]
+
+
+def solve_with_subgoals(
+    domain: STRIPS_domain,
+    initial_state: StateAssignment,
+    subgoals: SubgoalList,
+    heur: Optional[Heuristic] = None,
+) -> SubgoalSolveResult:
+    """Solve a planning problem by decomposing it into subgoals.
+
+    Args:
+        domain: The STRIPS domain
+        initial_state: Starting state assignment
+        subgoals: List of subgoal dicts to achieve in order
+        heur: Optional heuristic function
+
+    Returns:
+        SubgoalSolveResult with combined plan from all subgoals
+    """
+    current_state = dict(initial_state)
+    total_plan: List[str] = []
+    total_cost = 0.0
+    total_expanded = 0
+    total_time = 0.0
+    subgoal_results: List[SolveResult] = []
+    paths: List[object] = []
+
+    for i, subgoal in enumerate(subgoals):
+        # Create a sub-problem from current state to this subgoal
+        sub_problem = Planning_problem(domain, current_state, subgoal)
+
+        # Solve this sub-problem
+        result = solve_forward(sub_problem, heur=heur)
+        subgoal_results.append(result)
+
+        if not result.solved:
+            return SubgoalSolveResult(
+                solved=False,
+                total_plan=None,
+                total_cost=None,
+                total_expanded=total_expanded + result.expanded,
+                total_seconds=total_time + result.seconds,
+                subgoal_results=subgoal_results,
+                paths=paths,
+            )
+
+        # Accumulate results
+        if result.plan:
+            total_plan.extend(result.plan)
+        if result.cost is not None:
+            total_cost += result.cost
+        total_expanded += result.expanded
+        total_time += result.seconds
+        if result.path is not None:
+            paths.append(result.path)
+
+        # Update current state to the final state after this subgoal
+        if result.path is not None:
+            final_states = extract_state_assignments(result.path)
+            if final_states:
+                current_state = dict(final_states[-1])
+
+    return SubgoalSolveResult(
+        solved=True,
+        total_plan=total_plan,
+        total_cost=total_cost,
+        total_expanded=total_expanded,
+        total_seconds=total_time,
+        subgoal_results=subgoal_results,
+        paths=paths,
+    )
