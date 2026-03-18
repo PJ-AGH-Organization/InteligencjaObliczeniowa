@@ -1,11 +1,11 @@
-"""Search helpers for AIPython forward STRIPS planning."""
+"""Search helpers and heuristics for AIPython forward STRIPS planning."""
 
 from __future__ import annotations
 
 import time
 from collections import deque
 from dataclasses import dataclass
-from typing import Callable, Dict, List, Optional, Set, Tuple
+from typing import Callable, Dict, List, Optional, Set
 
 import Project2  # noqa: F401
 
@@ -17,6 +17,25 @@ StateAssignment = Dict[str, object]
 Goal = Dict[str, object]
 Heuristic = Callable[[StateAssignment, Goal], float]
 SubgoalList = List[Goal]
+
+
+# =============================================================================
+# Heuristics
+# =============================================================================
+
+
+def goal_mismatch_heur(state: StateAssignment, goal: Goal) -> float:
+    """Count how many goal conditions are not yet satisfied.
+
+    This heuristic is ADMISSIBLE (never overestimates) because each
+    unsatisfied goal requires at least one action to achieve.
+    """
+    return float(sum(1 for feat, val in goal.items() if state.get(feat) != val))
+
+
+# =============================================================================
+# Path utilities
+# =============================================================================
 
 
 def extract_action_names(path) -> List[str]:
