@@ -11,7 +11,9 @@ Examples:
 from __future__ import annotations
 
 import argparse
+import json
 from pathlib import Path
+from typing import Any
 
 from .problems import make_domain, make_problems, make_large_domain, make_large_problems, get_subgoals
 from .solve import (
@@ -22,6 +24,15 @@ from .solve import (
     solve_with_subgoals,
 )
 from .viz import save_solution_path_images
+
+
+def save_results(out_dir: Path, results: dict[str, Any]) -> Path:
+    """Save solve results to JSON file in the output directory."""
+    out_dir.mkdir(parents=True, exist_ok=True)
+    json_path = out_dir / "results.json"
+    with open(json_path, "w", encoding="utf-8") as f:
+        json.dump(results, f, indent=2, ensure_ascii=False)
+    return json_path
 
 
 def _parse_args(argv=None):
@@ -81,11 +92,38 @@ def main(argv=None) -> int:
             print(f"{name} with subgoals ({heur_name}):")
             print(f"  solved={res.solved}, total_cost={res.total_cost}, total_expanded={res.total_expanded}, time={res.total_seconds:.3f}s")
 
+            # Prepare results dict
+            results: dict[str, Any] = {
+                "problem": name,
+                "mode": "subgoals",
+                "heuristic": heur_name,
+                "reachable_states": n_states,
+                "reachable_states_limit": args.state_limit,
+                "solved": res.solved,
+                "total_cost": res.total_cost,
+                "total_expanded": res.total_expanded,
+                "time_seconds": res.total_seconds,
+                "num_subgoals": len(subgoals),
+                "subgoals_breakdown": [],
+                "total_plan": [],
+            }
+
             if res.solved:
                 print(f"  Subgoals breakdown ({len(subgoals)} subgoals):")
                 for i, (sg, sr) in enumerate(zip(subgoals, res.subgoal_results), 1):
                     print(f"    Subgoal {i}: cost={sr.cost}, expanded={sr.expanded}, actions={sr.plan}")
+                    results["subgoals_breakdown"].append({
+                        "subgoal_index": i,
+                        "cost": sr.cost,
+                        "expanded": sr.expanded,
+                        "actions": sr.plan,
+                    })
                 print(f"  Total plan ({len(res.total_plan)} actions): {res.total_plan}")
+                results["total_plan"] = res.total_plan
+
+            out_dir = base_out / name / f"subgoals_{heur_name}"
+            json_path = save_results(out_dir, results)
+            print(f"  wrote results to {json_path}")
 
             if res.solved and args.viz and res.paths:
                 # Combine all states from all subgoal paths
@@ -96,7 +134,6 @@ def main(argv=None) -> int:
                         states = states[1:]  # Skip first state (duplicate of previous end)
                     all_states.extend(states)
 
-                out_dir = base_out / name / f"subgoals_{heur_name}"
                 pdf = save_solution_path_images(all_states, res.total_plan, out_dir)
                 print(f"  wrote {len(all_states)} frames + {pdf}")
         else:
@@ -106,9 +143,26 @@ def main(argv=None) -> int:
                 f"{name} ({heur_name}): solved={res.solved}, cost={res.cost}, expanded={res.expanded}, time={res.seconds:.3f}s"
             )
 
+            # Prepare results dict
+            results: dict[str, Any] = {
+                "problem": name,
+                "mode": "standard",
+                "heuristic": heur_name,
+                "reachable_states": n_states,
+                "reachable_states_limit": args.state_limit,
+                "solved": res.solved,
+                "cost": res.cost,
+                "expanded": res.expanded,
+                "time_seconds": res.seconds,
+                "plan": res.plan if res.solved else [],
+            }
+
+            out_dir = base_out / name / heur_name
+            json_path = save_results(out_dir, results)
+            print(f"  wrote results to {json_path}")
+
             if res.solved and args.viz and res.path is not None:
                 states = extract_state_assignments(res.path)
-                out_dir = base_out / name / heur_name
                 pdf = save_solution_path_images(states, res.plan, out_dir)
                 print(f"  wrote {len(states)} frames + {pdf}")
 
