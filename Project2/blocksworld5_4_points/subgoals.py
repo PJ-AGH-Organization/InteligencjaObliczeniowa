@@ -1,4 +1,4 @@
-"""Subgoals definitions for 6-point requirements.
+"""Subgoals definitions for 6-point and 8-point requirements.
 
 Each problem has at least 2 subgoals that decompose the main goal into smaller steps.
 """
@@ -102,6 +102,250 @@ def get_subgoals(problem_name: str) -> List[Dict[str, object]]:
                 on("b"): "c",
                 on("c"): "table",
                 on("d"): "e",
+            },
+        ]
+
+    # ========== 8-point problems (12 blocks, >= 20 actions) ==========
+
+    elif problem_name == "problem4":
+        # Problem4: Two 6-block towers -> single 12-block tower
+        # Start: a-b-c-d-e-f tower + g-h-i-j-k-l tower
+        # Goal: single tower a-b-c-d-e-f-g-h-i-j-k-l
+        return [
+            # Subgoal 1: Disassemble first tower (a,b,c,d,e to table)
+            {
+                on("a"): "table",
+                on("b"): "table",
+                on("c"): "table",
+                on("d"): "table",
+                on("e"): "table",
+            },
+            # Subgoal 2: Disassemble second tower completely
+            {
+                on("a"): "table",
+                on("b"): "table",
+                on("c"): "table",
+                on("d"): "table",
+                on("e"): "table",
+                on("f"): "table",
+                on("g"): "table",
+                on("h"): "table",
+                on("i"): "table",
+                on("j"): "table",
+                on("k"): "table",
+                on("l"): "table",
+            },
+            # Subgoal 3: Build bottom of target (k on l)
+            {
+                on("k"): "l",
+                on("l"): "table",
+            },
+            # Subgoal 4: Continue (j on k)
+            {
+                on("j"): "k",
+                on("k"): "l",
+            },
+            # Subgoal 5: Continue (i on j)
+            {
+                on("i"): "j",
+                on("j"): "k",
+            },
+            # Subgoal 6: Continue (h on i)
+            {
+                on("h"): "i",
+                on("i"): "j",
+            },
+            # Subgoal 7: Continue (g on h)
+            {
+                on("g"): "h",
+                on("h"): "i",
+            },
+            # Subgoal 8: Continue (f on g)
+            {
+                on("f"): "g",
+                on("g"): "h",
+            },
+            # Subgoal 9: Complete tower
+            {
+                on("a"): "b",
+                on("b"): "c",
+                on("c"): "d",
+                on("d"): "e",
+                on("e"): "f",
+                on("f"): "g",
+                on("g"): "h",
+                on("h"): "i",
+                on("i"): "j",
+                on("j"): "k",
+                on("k"): "l",
+                on("l"): "table",
+            },
+        ]
+
+    elif problem_name == "problem5":
+        # Problem5: 12-tower -> reversed 12-tower
+        # Start: tower a-b-c-d-e-f-g-h-i-j-k-l (a at top)
+        # Goal: reversed tower l-k-j-i-h-g-f-e-d-c-b-a (l at top, a at bottom)
+        return [
+            # Subgoal 1: Disassemble tower (first 6 blocks to table)
+            {
+                on("a"): "table",
+                on("b"): "table",
+                on("c"): "table",
+                on("d"): "table",
+                on("e"): "table",
+                on("f"): "table",
+                clear("g"): True,
+            },
+            # Subgoal 2: Disassemble rest (all to table)
+            {
+                on("a"): "table",
+                on("b"): "table",
+                on("c"): "table",
+                on("d"): "table",
+                on("e"): "table",
+                on("f"): "table",
+                on("g"): "table",
+                on("h"): "table",
+                on("i"): "table",
+                on("j"): "table",
+                on("k"): "table",
+                on("l"): "table",
+            },
+            # Subgoal 3: Build reversed base (b on a)
+            {
+                on("b"): "a",
+                on("a"): "table",
+            },
+            # Subgoal 4: Continue (c on b)
+            {
+                on("c"): "b",
+                on("b"): "a",
+            },
+            # Subgoal 5: Continue (d on c)
+            {
+                on("d"): "c",
+                on("c"): "b",
+            },
+            # Subgoal 6: Continue (e on d)
+            {
+                on("e"): "d",
+                on("d"): "c",
+            },
+            # Subgoal 7: Continue (f on e)
+            {
+                on("f"): "e",
+                on("e"): "d",
+            },
+            # Subgoal 8: Continue (g on f)
+            {
+                on("g"): "f",
+                on("f"): "e",
+            },
+            # Subgoal 9: Continue (h on g)
+            {
+                on("h"): "g",
+                on("g"): "f",
+            },
+            # Subgoal 10: Complete reversed tower
+            {
+                on("l"): "k",
+                on("k"): "j",
+                on("j"): "i",
+                on("i"): "h",
+                on("h"): "g",
+                on("g"): "f",
+                on("f"): "e",
+                on("e"): "d",
+                on("d"): "c",
+                on("c"): "b",
+                on("b"): "a",
+                on("a"): "table",
+            },
+        ]
+
+    elif problem_name == "problem6":
+        # Problem6: 2 towers of 6 -> reversed single 12-tower
+        # Start: towers a-b-c-d-e-f and g-h-i-j-k-l
+        # Goal: reversed tower l-k-j-i-h-g-f-e-d-c-b-a
+        return [
+            # Subgoal 1: Disassemble tower 1 (a,b,c,d,e to table)
+            {
+                on("a"): "table",
+                on("b"): "table",
+                on("c"): "table",
+                on("d"): "table",
+                on("e"): "table",
+            },
+            # Subgoal 2: Disassemble tower 2 (g,h,i,j,k to table)
+            {
+                on("a"): "table",
+                on("b"): "table",
+                on("c"): "table",
+                on("d"): "table",
+                on("e"): "table",
+                on("f"): "table",
+                on("g"): "table",
+                on("h"): "table",
+                on("i"): "table",
+                on("j"): "table",
+                on("k"): "table",
+                on("l"): "table",
+            },
+            # Subgoal 3: Build reversed base (b on a)
+            {
+                on("b"): "a",
+                on("a"): "table",
+            },
+            # Subgoal 4: Continue (c on b)
+            {
+                on("c"): "b",
+                on("b"): "a",
+            },
+            # Subgoal 5: Continue (d on c)
+            {
+                on("d"): "c",
+                on("c"): "b",
+            },
+            # Subgoal 6: Continue (e on d)
+            {
+                on("e"): "d",
+                on("d"): "c",
+            },
+            # Subgoal 7: Continue (f on e)
+            {
+                on("f"): "e",
+                on("e"): "d",
+            },
+            # Subgoal 8: Continue (g on f)
+            {
+                on("g"): "f",
+                on("f"): "e",
+            },
+            # Subgoal 9: Continue (h on g)
+            {
+                on("h"): "g",
+                on("g"): "f",
+            },
+            # Subgoal 10: Continue (i on h)
+            {
+                on("i"): "h",
+                on("h"): "g",
+            },
+            # Subgoal 11: Complete reversed tower
+            {
+                on("l"): "k",
+                on("k"): "j",
+                on("j"): "i",
+                on("i"): "h",
+                on("h"): "g",
+                on("g"): "f",
+                on("f"): "e",
+                on("e"): "d",
+                on("d"): "c",
+                on("c"): "b",
+                on("b"): "a",
+                on("a"): "table",
             },
         ]
 

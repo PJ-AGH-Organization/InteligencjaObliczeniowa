@@ -7,6 +7,8 @@ Examples (from repo root):
     uv run python -m Project2.blocksworld5_4_points --problem problem2 --heur zero --viz
 - Solve with subgoals (6-point requirement):
     uv run python -m Project2.blocksworld5_4_points --subgoals
+- Solve large problems with subgoals (8-point requirement):
+    uv run python -m Project2.blocksworld5_4_points --large --subgoals
 """
 
 from __future__ import annotations
@@ -16,6 +18,7 @@ from pathlib import Path
 
 from .heuristics import goal_mismatch_heur
 from .problems import make_domain, make_problems
+from .problems_8_points import make_large_domain, make_large_problems
 from .solve import extract_state_assignments, reachable_state_count, solve_forward, solve_with_subgoals
 from .subgoals import get_subgoals
 from .viz import save_solution_path_images
@@ -23,22 +26,30 @@ from .viz import save_solution_path_images
 
 def _parse_args(argv=None):
     p = argparse.ArgumentParser(prog="Project2.blocksworld5_4_points")
-    p.add_argument("--problem", default="all", help="problem1|problem2|problem3|all")
+    p.add_argument("--problem", default="all", help="problem1|problem2|problem3|all (or problem4|problem5|problem6 with --large)")
     p.add_argument("--heur", default="mismatch", help="mismatch|zero")
     p.add_argument("--viz", action="store_true", help="save PNG frames + one PDF for the solution path")
     p.add_argument("--out", default="Project2/blocksworld5_4_points/outputs", help="base output directory")
     p.add_argument("--state-limit", type=int, default=10_000, help="cap when counting reachable states")
     p.add_argument("--subgoals", action="store_true", help="solve with subgoals (6-point requirement)")
+    p.add_argument("--large", action="store_true", help="use large problems with 8 blocks (8-point requirement)")
     return p.parse_args(argv)
 
 
 def main(argv=None) -> int:
     args = _parse_args(argv)
 
-    domain = make_domain()
-    problems = make_problems(domain)
+    # Select domain and problems based on --large flag
+    if args.large:
+        domain = make_large_domain()
+        problems = make_large_problems(domain)
+        default_problems = ["problem4", "problem5", "problem6"]
+    else:
+        domain = make_domain()
+        problems = make_problems(domain)
+        default_problems = ["problem1", "problem2", "problem3"]
 
-    selected = problems.keys() if args.problem == "all" else [args.problem]
+    selected = default_problems if args.problem == "all" else [args.problem]
     for name in selected:
         if name not in problems:
             raise SystemExit(f"Unknown problem: {name}. Choose from: {', '.join(problems)}")
