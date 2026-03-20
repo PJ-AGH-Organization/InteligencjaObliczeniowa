@@ -6,6 +6,7 @@ Examples:
 - Solve large problems:         uv run python -m Project2.blocksworld5_4_points --large --subgoals
 - Generate visualizations:      uv run python -m Project2.blocksworld5_4_points --viz
 - Without heuristic:            uv run python -m Project2.blocksworld5_4_points --heur zero
+- With timeout:                 uv run python -m Project2.blocksworld5_4_points --timeout 300
 """
 
 from __future__ import annotations
@@ -44,6 +45,7 @@ def _parse_args(argv=None):
     p.add_argument("--state-limit", type=int, default=10_000, help="cap when counting reachable states")
     p.add_argument("--subgoals", action="store_true", help="solve with subgoals (6-point requirement)")
     p.add_argument("--large", action="store_true", help="use large problems with 8 blocks (8-point requirement)")
+    p.add_argument("--timeout", type=float, default=None, help="timeout in seconds (default: no timeout)")
     return p.parse_args(argv)
 
 
@@ -88,9 +90,11 @@ def main(argv=None) -> int:
             subgoals = get_subgoals(name)
             initial_state = prob.initial_state
 
-            res = solve_with_subgoals(domain, initial_state, subgoals, heur=heur)
+            res = solve_with_subgoals(domain, initial_state, subgoals, heur=heur, timeout=args.timeout)
+
+            status = "TIMEOUT" if res.timed_out else ("solved" if res.solved else "failed")
             print(f"{name} with subgoals ({heur_name}):")
-            print(f"  solved={res.solved}, total_cost={res.total_cost}, total_expanded={res.total_expanded}, time={res.total_seconds:.3f}s")
+            print(f"  status={status}, total_cost={res.total_cost}, total_expanded={res.total_expanded}, time={res.total_seconds:.3f}s")
 
             # Prepare results dict
             results: dict[str, Any] = {
@@ -100,6 +104,8 @@ def main(argv=None) -> int:
                 "reachable_states": n_states,
                 "reachable_states_limit": args.state_limit,
                 "solved": res.solved,
+                "timed_out": res.timed_out,
+                "timeout_seconds": args.timeout,
                 "total_cost": res.total_cost,
                 "total_expanded": res.total_expanded,
                 "time_seconds": res.total_seconds,
@@ -138,9 +144,11 @@ def main(argv=None) -> int:
                 print(f"  wrote {len(all_states)} frames + {pdf}")
         else:
             # Standard solving (4-point requirement)
-            res = solve_forward(prob, heur=heur)
+            res = solve_forward(prob, heur=heur, timeout=args.timeout)
+
+            status = "TIMEOUT" if res.timed_out else ("solved" if res.solved else "failed")
             print(
-                f"{name} ({heur_name}): solved={res.solved}, cost={res.cost}, expanded={res.expanded}, time={res.seconds:.3f}s"
+                f"{name} ({heur_name}): status={status}, cost={res.cost}, expanded={res.expanded}, time={res.seconds:.3f}s"
             )
 
             # Prepare results dict
@@ -151,6 +159,8 @@ def main(argv=None) -> int:
                 "reachable_states": n_states,
                 "reachable_states_limit": args.state_limit,
                 "solved": res.solved,
+                "timed_out": res.timed_out,
+                "timeout_seconds": args.timeout,
                 "cost": res.cost,
                 "expanded": res.expanded,
                 "time_seconds": res.seconds,

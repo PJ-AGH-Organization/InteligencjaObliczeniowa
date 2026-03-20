@@ -12,6 +12,42 @@ import Project2  # noqa: F401
 from stripsProblem import Planning_problem, STRIPS_domain
 from stripsForwardPlanner import Forward_STRIPS
 from searchMPP import SearcherMPP
+from searchProblem import Path
+
+
+class TimeoutSearcherMPP(SearcherMPP):
+    """SearcherMPP with timeout support."""
+
+    def __init__(self, problem, timeout: Optional[float] = None):
+        super().__init__(problem)
+        self.timeout = timeout
+        self.timed_out = False
+
+    def search(self):
+        """Search with optional timeout. Returns None if timeout or no solution."""
+        start_time = time.perf_counter()
+
+        while not self.empty_frontier():
+            # Check timeout
+            if self.timeout is not None:
+                elapsed = time.perf_counter() - start_time
+                if elapsed >= self.timeout:
+                    self.timed_out = True
+                    return None
+
+            self.path = self.frontier.pop()
+            if self.path.end() not in self.explored:
+                self.explored.add(self.path.end())
+                self.num_expanded += 1
+                if self.problem.is_goal(self.path.end()):
+                    self.solution = self.path
+                    return self.path
+                else:
+                    neighs = self.problem.neighbors(self.path.end())
+                    for arc in neighs:
+                        self.add_to_frontier(Path(self.path, arc))
+
+        return None
 
 StateAssignment = Dict[str, object]
 Goal = Dict[str, object]
@@ -85,24 +121,45 @@ class SolveResult:
     expanded: int
     seconds: float
     path: object | None
+    timed_out: bool = False
 
 
-def solve_forward(problem: Planning_problem, heur: Optional[Heuristic] = None) -> SolveResult:
-    """Run A* (SearcherMPP) on forward STRIPS."""
+def solve_forward(
+    problem: Planning_problem,
+    heur: Optional[Heuristic] = None,
+    timeout: Optional[float] = None,
+) -> SolveResult:
+    """Run A* (SearcherMPP) on forward STRIPS with optional timeout."""
     if heur is None:
         heur = lambda *_: 0  # type: ignore[assignment]
 
     sp = Forward_STRIPS(problem, heur=heur)
-    searcher = SearcherMPP(sp)
+    searcher = TimeoutSearcherMPP(sp, timeout=timeout)
 
     t0 = time.perf_counter()
     path = searcher.search()
     dt = time.perf_counter() - t0
 
     if path is None:
-        return SolveResult(False, None, None, searcher.num_expanded, dt, None)
+        return SolveResult(
+            solved=False,
+            plan=None,
+            cost=None,
+            expanded=searcher.num_expanded,
+            seconds=dt,
+            path=None,
+            timed_out=searcher.timed_out,
+        )
 
-    return SolveResult(True, extract_action_names(path), path.cost, searcher.num_expanded, dt, path)
+    return SolveResult(
+        solved=True,
+        plan=extract_action_names(path),
+        cost=path.cost,
+        expanded=searcher.num_expanded,
+        seconds=dt,
+        path=path,
+        timed_out=False,
+    )
 
 
 @dataclass(frozen=True)
@@ -116,6 +173,7 @@ class SubgoalSolveResult:
     total_seconds: float
     subgoal_results: List[SolveResult]
     paths: List[object]
+    timed_out: bool = False
 
 
 def solve_with_subgoals(
@@ -123,6 +181,7 @@ def solve_with_subgoals(
     initial_state: StateAssignment,
     subgoals: SubgoalList,
     heur: Optional[Heuristic] = None,
+    timeout: Optional[float] = None,
 ) -> SubgoalSolveResult:
     """Solve a planning problem by decomposing it into subgoals.
 
@@ -131,35 +190,57 @@ def solve_with_subgoals(
         initial_state: Starting state assignment
         subgoals: List of subgoal dicts to achieve in order
         heur: Optional heuristic function
+        timeout: Optional timeout in seconds (applies to entire solve, not per-subgoal)
 
     Returns:
         SubgoalSolveResult with combined plan from all subgoals
     """
+    start_time = time.perf_counter()
     current_state = dict(initial_state)
     total_plan: List[str] = []
     total_cost = 0.0
     total_expanded = 0
-    total_time = 0.0
     subgoal_results: List[SolveResult] = []
     paths: List[object] = []
 
     for i, subgoal in enumerate(subgoals):
+        # Calculate remaining timeout for this subgoal
+        remaining_timeout = None
+        if timeout is not None:
+            elapsed = time.perf_counter() - start_time
+            remaining_timeout = timeout - elapsed
+            if remaining_timeout <= 0:
+                # Already timed out
+                total_time = time.perf_counter() - start_time
+                return SubgoalSolveResult(
+                    solved=False,
+                    total_plan=None,
+                    total_cost=None,
+                    total_expanded=total_expanded,
+                    total_seconds=total_time,
+                    subgoal_results=subgoal_results,
+                    paths=paths,
+                    timed_out=True,
+                )
+
         # Create a sub-problem from current state to this subgoal
         sub_problem = Planning_problem(domain, current_state, subgoal)
 
         # Solve this sub-problem
-        result = solve_forward(sub_problem, heur=heur)
+        result = solve_forward(sub_problem, heur=heur, timeout=remaining_timeout)
         subgoal_results.append(result)
 
         if not result.solved:
+            total_time = time.perf_counter() - start_time
             return SubgoalSolveResult(
                 solved=False,
                 total_plan=None,
                 total_cost=None,
                 total_expanded=total_expanded + result.expanded,
-                total_seconds=total_time + result.seconds,
+                total_seconds=total_time,
                 subgoal_results=subgoal_results,
                 paths=paths,
+                timed_out=result.timed_out,
             )
 
         # Accumulate results
@@ -168,7 +249,6 @@ def solve_with_subgoals(
         if result.cost is not None:
             total_cost += result.cost
         total_expanded += result.expanded
-        total_time += result.seconds
         if result.path is not None:
             paths.append(result.path)
 
@@ -178,6 +258,7 @@ def solve_with_subgoals(
             if final_states:
                 current_state = dict(final_states[-1])
 
+    total_time = time.perf_counter() - start_time
     return SubgoalSolveResult(
         solved=True,
         total_plan=total_plan,
@@ -186,4 +267,5 @@ def solve_with_subgoals(
         total_seconds=total_time,
         subgoal_results=subgoal_results,
         paths=paths,
+        timed_out=False,
     )
