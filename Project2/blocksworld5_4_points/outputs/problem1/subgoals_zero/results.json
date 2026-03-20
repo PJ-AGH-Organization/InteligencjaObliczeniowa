@@ -7,34 +7,45 @@
   "solved": true,
   "timed_out": false,
   "timeout_seconds": 300.0,
-  "total_cost": 4.0,
-  "total_expanded": 41,
-  "time_seconds": 0.0016037940004025586,
-  "num_subgoals": 2,
+  "total_cost": 6.0,
+  "total_expanded": 180,
+  "time_seconds": 0.008462888000394742,
+  "num_subgoals": 3,
   "subgoals_breakdown": [
     {
       "subgoal_index": 1,
       "cost": 2,
-      "expanded": 13,
+      "expanded": 24,
       "actions": [
         "move_c_from_a_to_table",
-        "move_b_from_table_to_c"
+        "move_e_from_d_to_table"
       ]
     },
     {
       "subgoal_index": 2,
       "cost": 2,
-      "expanded": 28,
+      "expanded": 130,
       "actions": [
-        "move_a_from_table_to_b",
-        "move_e_from_d_to_table"
+        "move_b_from_table_to_c",
+        "move_d_from_table_to_b"
+      ]
+    },
+    {
+      "subgoal_index": 3,
+      "cost": 2,
+      "expanded": 26,
+      "actions": [
+        "move_d_from_b_to_table",
+        "move_a_from_table_to_b"
       ]
     }
   ],
   "total_plan": [
     "move_c_from_a_to_table",
+    "move_e_from_d_to_table",
     "move_b_from_table_to_c",
-    "move_a_from_table_to_b",
-    "move_e_from_d_to_table"
+    "move_d_from_table_to_b",
+    "move_d_from_b_to_table",
+    "move_a_from_table_to_b"
   ]
 }

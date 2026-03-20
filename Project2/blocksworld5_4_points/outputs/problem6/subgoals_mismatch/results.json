@@ -8,8 +8,8 @@
   "timed_out": false,
   "timeout_seconds": 300.0,
   "total_cost": 20.0,
-  "total_expanded": 43,
-  "time_seconds": 0.021210601000348106,
+  "total_expanded": 65,
+  "time_seconds": 0.03320442400035972,
   "num_subgoals": 3,
   "subgoals_breakdown": [
     {
@@ -33,7 +33,7 @@
     {
       "subgoal_index": 2,
       "cost": 3,
-      "expanded": 4,
+      "expanded": 6,
       "actions": [
         "move_b_from_table_to_a",
         "move_c_from_table_to_b",
@@ -43,7 +43,7 @@
     {
       "subgoal_index": 3,
       "cost": 6,
-      "expanded": 27,
+      "expanded": 47,
       "actions": [
         "move_f_from_table_to_e",
         "move_j_from_table_to_i",
