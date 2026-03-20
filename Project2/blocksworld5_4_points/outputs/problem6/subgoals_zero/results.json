@@ -1,0 +1,16 @@
+{
+  "problem": "problem6",
+  "mode": "subgoals",
+  "heuristic": "zero",
+  "reachable_states": 10000,
+  "reachable_states_limit": 10000,
+  "solved": false,
+  "timed_out": true,
+  "timeout_seconds": 300.0,
+  "total_cost": null,
+  "total_expanded": 582730,
+  "time_seconds": 325.0991447100005,
+  "num_subgoals": 3,
+  "subgoals_breakdown": [],
+  "total_plan": []
+}

@@ -211,24 +211,33 @@ def get_subgoals(problem_name: str) -> List[Goal]:
 # Small problems subgoals (5 blocks) - minimum 2 subgoals each
 _SUBGOALS_SMALL = {
     # Problem 1: Build 3-tower a->b->c with d,e separate
+    # Initial: c on a, e on d, b alone
     "problem1": [
-        # Subgoal 1: Clear blocks and prepare base
-        {on("c"): "table", on("b"): "c", clear("a"): True},
-        # Subgoal 2: Full goal
+        # Subgoal 1: Move c off a to table, move e off d to table
+        {on("c"): "table", on("e"): "table", clear("a"): True, clear("d"): True},
+        # Subgoal 2: Build base of tower - put b on c
+        {on("c"): "table", on("b"): "c", clear("b"): False},
+        # Subgoal 3: Full goal - complete tower a->b->c
         {on("a"): "b", on("b"): "c", on("c"): "table", on("d"): "table", on("e"): "table"},
     ],
     # Problem 2: Build two 2-towers (b->a and d->c) + e separate
+    # Initial: tall tower a->b->c->d->e
     "problem2": [
-        # Subgoal 1: Dismantle original tower
-        {on("a"): "table", on("b"): "table", on("c"): "table", on("d"): "table"},
-        # Subgoal 2: Full goal - two 2-towers
+        # Subgoal 1: Dismantle original tower - all blocks on table
+        {on("a"): "table", on("b"): "table", on("c"): "table", on("d"): "table", on("e"): "table"},
+        # Subgoal 2: Build first 2-tower (b->a)
+        {on("b"): "a", on("a"): "table", on("c"): "table"},
+        # Subgoal 3: Full goal - two 2-towers
         {on("b"): "a", on("a"): "table", on("d"): "c", on("c"): "table", on("e"): "table"},
     ],
     # Problem 3: Build 4-tower e->d->c->b with a separate
+    # Initial: d on b (blocks b), c on a, e on table
     "problem3": [
-        # Subgoal 1: Unblock b and start building
-        {on("d"): "table", on("c"): "b", clear("b"): False},
-        # Subgoal 2: Full goal
+        # Subgoal 1: Unblock b by moving d to table
+        {on("d"): "table", clear("b"): True},
+        # Subgoal 2: Build lower part of tower - c on b, d on c
+        {on("c"): "b", on("d"): "c", clear("d"): True},
+        # Subgoal 3: Full goal - complete 4-tower e->d->c->b
         {on("e"): "d", on("d"): "c", on("c"): "b", on("b"): "table", on("a"): "table"},
     ],
 }
