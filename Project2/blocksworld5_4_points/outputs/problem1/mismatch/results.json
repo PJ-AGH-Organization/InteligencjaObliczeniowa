@@ -2,19 +2,18 @@
   "problem": "problem1",
   "mode": "standard",
   "heuristic": "mismatch",
-  "reachable_states": 554,
+  "reachable_states": 522,
   "reachable_states_limit": 10000,
   "solved": true,
   "timed_out": false,
   "timeout_seconds": null,
-  "cost": 5,
-  "expanded": 9,
-  "time_seconds": 0.00031691599997429876,
+  "cost": 4,
+  "expanded": 7,
+  "time_seconds": 0.00030045800031075487,
   "plan": [
     "move_e_from_d_to_table",
-    "move_d_from_table_to_e",
-    "move_c_from_b_to_d",
-    "move_b_from_a_to_c",
+    "move_c_from_a_to_table",
+    "move_b_from_table_to_c",
     "move_a_from_table_to_b"
   ]
 }

@@ -39,10 +39,6 @@ echo ">>> Problem 4-6, subgoals + mismatch"
 uv run python -m Project2.blocksworld5_4_points --large --subgoals --heur=mismatch --viz --timeout=$TIMEOUT
 
 echo ""
-echo ">>> Problem 4-6, subgoals + zero"
-uv run python -m Project2.blocksworld5_4_points --large --subgoals --heur=zero --viz --timeout=$TIMEOUT
-
-echo ""
 echo "=========================================="
 echo "WSZYSTKIE TESTY ZAKOŃCZONE!"
 echo "=========================================="
