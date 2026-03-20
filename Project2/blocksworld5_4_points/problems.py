@@ -208,90 +208,70 @@ def get_subgoals(problem_name: str) -> List[Goal]:
     return subgoals
 
 
-# Small problems subgoals (5 blocks)
+# Small problems subgoals (5 blocks) - minimum 2 subgoals each
 _SUBGOALS_SMALL = {
     # Problem 1: Build 3-tower a->b->c with d,e separate
-    # Initial: c on a, e on d, b alone
     "problem1": [
-        {on("c"): "table", clear("a"): True},  # Move c off a
-        {on("c"): "table", on("b"): "c"},  # Put b on c
-        {on("a"): "b", on("b"): "c", on("c"): "table", on("d"): "table", on("e"): "table"},  # Full goal
+        # Subgoal 1: Clear blocks and prepare base
+        {on("c"): "table", on("b"): "c", clear("a"): True},
+        # Subgoal 2: Full goal
+        {on("a"): "b", on("b"): "c", on("c"): "table", on("d"): "table", on("e"): "table"},
     ],
     # Problem 2: Build two 2-towers (b->a and d->c) + e separate
-    # Initial: tower a->b->c->d->e
     "problem2": [
-        {on("a"): "table", on("b"): "table", on("c"): "table"},  # Dismantle upper part
-        {on("a"): "table", on("b"): "a", on("c"): "table"},  # Build first 2-tower b->a
-        {on("b"): "a", on("a"): "table", on("d"): "c", on("c"): "table", on("e"): "table"},  # Full goal
+        # Subgoal 1: Dismantle original tower
+        {on("a"): "table", on("b"): "table", on("c"): "table", on("d"): "table"},
+        # Subgoal 2: Full goal - two 2-towers
+        {on("b"): "a", on("a"): "table", on("d"): "c", on("c"): "table", on("e"): "table"},
     ],
     # Problem 3: Build 4-tower e->d->c->b with a separate
-    # Initial: d on b (blocks b), c on a
     "problem3": [
-        {on("d"): "table", clear("b"): True},  # Move d off b to unblock it
-        {on("c"): "b", on("b"): "table"},  # Put c on b
-        {on("d"): "c", on("c"): "b"},  # Build d->c->b
-        {on("e"): "d", on("d"): "c", on("c"): "b", on("b"): "table", on("a"): "table"},  # Full goal
+        # Subgoal 1: Unblock b and start building
+        {on("d"): "table", on("c"): "b", clear("b"): False},
+        # Subgoal 2: Full goal
+        {on("e"): "d", on("d"): "c", on("c"): "b", on("b"): "table", on("a"): "table"},
     ],
 }
 
-# Large problems subgoals (12 blocks)
+# Large problems subgoals (12 blocks) - minimum 2 subgoals each
 _SUBGOALS_LARGE = {
     # Problem 4: Two 6-towers -> Two reversed 6-towers
-    # Goal: f->e->d->c->b->a and l->k->j->i->h->g
     "problem4": [
-        # Phase 1: Dismantle towers to table
-        {on("a"): "table", on("b"): "table", on("c"): "table", on("d"): "table", on("e"): "table"},
+        # Subgoal 1: Dismantle all towers to table
         {on(b): "table" for b in "abcdefghijkl"},
-        # Phase 2: Build first reversed tower f->e->d->c->b->a
-        {on("b"): "a", on("a"): "table"},
-        {on("c"): "b", on("b"): "a"},
-        {on("d"): "c", on("c"): "b"},
-        {on("e"): "d", on("d"): "c"},
+        # Subgoal 2: Build first reversed tower
         {on("f"): "e", on("e"): "d", on("d"): "c", on("c"): "b", on("b"): "a", on("a"): "table"},
-        # Phase 3: Build second reversed tower l->k->j->i->h->g
-        {on("f"): "e", on("h"): "g", on("g"): "table"},
-        {on("f"): "e", on("i"): "h", on("h"): "g"},
+        # Subgoal 3: Full goal - both reversed towers
         {
             on("f"): "e", on("e"): "d", on("d"): "c", on("c"): "b", on("b"): "a", on("a"): "table",
             on("l"): "k", on("k"): "j", on("j"): "i", on("i"): "h", on("h"): "g", on("g"): "table",
         },
     ],
-    # Problem 5: Two 6-towers -> One 12-tower a->b->c->...->l
+    # Problem 5: Two 6-towers -> One 12-tower
     "problem5": [
-        # Phase 1: Dismantle first tower
-        {on("a"): "table", on("b"): "table", on("c"): "table", on("d"): "table", on("e"): "table"},
+        # Subgoal 1: Dismantle all towers to table
         {on(b): "table" for b in "abcdefghijkl"},
-        # Phase 2: Build 12-tower from bottom up
-        {on("k"): "l", on("l"): "table"},
-        {on("j"): "k", on("k"): "l"},
-        {on("i"): "j", on("j"): "k"},
-        {on("h"): "i", on("i"): "j"},
-        {on("g"): "h", on("h"): "i"},
-        {on("f"): "g", on("g"): "h"},
+        # Subgoal 2: Build lower half of 12-tower
+        {on("f"): "g", on("g"): "h", on("h"): "i", on("i"): "j", on("j"): "k", on("k"): "l", on("l"): "table"},
+        # Subgoal 3: Full goal - complete 12-tower
         {
             on("a"): "b", on("b"): "c", on("c"): "d", on("d"): "e",
             on("e"): "f", on("f"): "g", on("g"): "h", on("h"): "i",
             on("i"): "j", on("j"): "k", on("k"): "l", on("l"): "table",
         },
     ],
-    # Problem 6: 12-tower -> Three 4-towers (d->c->b->a, h->g->f->e, l->k->j->i)
+    # Problem 6: 12-tower -> Three 4-towers
     "problem6": [
-        # Phase 1: Dismantle the tall tower
-        {on("a"): "table", on("b"): "table", on("c"): "table"},
-        {on("a"): "table", on("b"): "table", on("c"): "table", on("d"): "table", on("e"): "table", on("f"): "table"},
+        # Subgoal 1: Dismantle the tall tower
         {on(b): "table" for b in "abcdefghijkl"},
-        # Phase 2: Build three 4-towers
-        {on("b"): "a", on("a"): "table"},  # Start tower 1
-        {on("c"): "b", on("b"): "a"},  # Continue tower 1
-        {on("d"): "c", on("c"): "b", on("b"): "a", on("a"): "table"},  # Complete tower 1
-        {on("d"): "c", on("f"): "e", on("e"): "table"},  # Start tower 2
-        {on("d"): "c", on("g"): "f", on("f"): "e"},  # Continue tower 2
-        {on("d"): "c", on("h"): "g", on("g"): "f", on("f"): "e", on("e"): "table"},  # Complete tower 2
+        # Subgoal 2: Build first 4-tower
+        {on("d"): "c", on("c"): "b", on("b"): "a", on("a"): "table"},
+        # Subgoal 3: Full goal - three 4-towers
         {
             on("d"): "c", on("c"): "b", on("b"): "a", on("a"): "table",
             on("h"): "g", on("g"): "f", on("f"): "e", on("e"): "table",
             on("l"): "k", on("k"): "j", on("j"): "i", on("i"): "table",
-        },  # Full goal
+        },
     ],
 }
 
