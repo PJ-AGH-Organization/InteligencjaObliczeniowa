@@ -1,0 +1,49 @@
+{
+  "problem": "problem1",
+  "mode": "subgoals",
+  "heuristic": "mismatch",
+  "reachable_states": 554,
+  "reachable_states_limit": 10000,
+  "solved": true,
+  "timed_out": false,
+  "timeout_seconds": null,
+  "total_cost": 5.0,
+  "total_expanded": 8,
+  "time_seconds": 0.00032983299979605363,
+  "num_subgoals": 3,
+  "subgoals_breakdown": [
+    {
+      "subgoal_index": 1,
+      "cost": 1,
+      "expanded": 2,
+      "actions": [
+        "move_e_from_d_to_table"
+      ]
+    },
+    {
+      "subgoal_index": 2,
+      "cost": 1,
+      "expanded": 2,
+      "actions": [
+        "move_d_from_table_to_e"
+      ]
+    },
+    {
+      "subgoal_index": 3,
+      "cost": 3,
+      "expanded": 4,
+      "actions": [
+        "move_c_from_b_to_d",
+        "move_b_from_a_to_c",
+        "move_a_from_table_to_b"
+      ]
+    }
+  ],
+  "total_plan": [
+    "move_e_from_d_to_table",
+    "move_d_from_table_to_e",
+    "move_c_from_b_to_d",
+    "move_b_from_a_to_c",
+    "move_a_from_table_to_b"
+  ]
+}

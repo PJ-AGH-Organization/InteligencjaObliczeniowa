@@ -1,0 +1,20 @@
+{
+  "problem": "problem2",
+  "mode": "standard",
+  "heuristic": "mismatch",
+  "reachable_states": 555,
+  "reachable_states_limit": 10000,
+  "solved": true,
+  "timed_out": false,
+  "timeout_seconds": null,
+  "cost": 5,
+  "expanded": 6,
+  "time_seconds": 0.00017524799977763905,
+  "plan": [
+    "move_a_from_b_to_table",
+    "move_b_from_c_to_a",
+    "move_c_from_d_to_b",
+    "move_d_from_e_to_c",
+    "move_e_from_table_to_d"
+  ]
+}

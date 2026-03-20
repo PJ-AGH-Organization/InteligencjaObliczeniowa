@@ -1,0 +1,132 @@
+{
+  "problem": "problem5",
+  "mode": "subgoals",
+  "heuristic": "zero",
+  "reachable_states": 10000,
+  "reachable_states_limit": 10000,
+  "solved": true,
+  "timed_out": false,
+  "timeout_seconds": 300.0,
+  "total_cost": 22.0,
+  "total_expanded": 164697,
+  "time_seconds": 89.37775588599993,
+  "num_subgoals": 10,
+  "subgoals_breakdown": [
+    {
+      "subgoal_index": 1,
+      "cost": 6,
+      "expanded": 391,
+      "actions": [
+        "move_a_from_b_to_table",
+        "move_b_from_c_to_table",
+        "move_c_from_d_to_table",
+        "move_d_from_e_to_table",
+        "move_e_from_f_to_table",
+        "move_f_from_g_to_table"
+      ]
+    },
+    {
+      "subgoal_index": 2,
+      "cost": 5,
+      "expanded": 159010,
+      "actions": [
+        "move_g_from_h_to_table",
+        "move_h_from_i_to_table",
+        "move_i_from_j_to_table",
+        "move_j_from_k_to_table",
+        "move_k_from_l_to_table"
+      ]
+    },
+    {
+      "subgoal_index": 3,
+      "cost": 1,
+      "expanded": 34,
+      "actions": [
+        "move_b_from_table_to_a"
+      ]
+    },
+    {
+      "subgoal_index": 4,
+      "cost": 1,
+      "expanded": 21,
+      "actions": [
+        "move_c_from_table_to_b"
+      ]
+    },
+    {
+      "subgoal_index": 5,
+      "cost": 1,
+      "expanded": 11,
+      "actions": [
+        "move_d_from_table_to_c"
+      ]
+    },
+    {
+      "subgoal_index": 6,
+      "cost": 1,
+      "expanded": 17,
+      "actions": [
+        "move_e_from_table_to_d"
+      ]
+    },
+    {
+      "subgoal_index": 7,
+      "cost": 1,
+      "expanded": 45,
+      "actions": [
+        "move_f_from_table_to_e"
+      ]
+    },
+    {
+      "subgoal_index": 8,
+      "cost": 1,
+      "expanded": 4,
+      "actions": [
+        "move_g_from_table_to_f"
+      ]
+    },
+    {
+      "subgoal_index": 9,
+      "cost": 1,
+      "expanded": 32,
+      "actions": [
+        "move_h_from_table_to_g"
+      ]
+    },
+    {
+      "subgoal_index": 10,
+      "cost": 4,
+      "expanded": 5132,
+      "actions": [
+        "move_i_from_table_to_h",
+        "move_j_from_table_to_i",
+        "move_k_from_table_to_j",
+        "move_l_from_table_to_k"
+      ]
+    }
+  ],
+  "total_plan": [
+    "move_a_from_b_to_table",
+    "move_b_from_c_to_table",
+    "move_c_from_d_to_table",
+    "move_d_from_e_to_table",
+    "move_e_from_f_to_table",
+    "move_f_from_g_to_table",
+    "move_g_from_h_to_table",
+    "move_h_from_i_to_table",
+    "move_i_from_j_to_table",
+    "move_j_from_k_to_table",
+    "move_k_from_l_to_table",
+    "move_b_from_table_to_a",
+    "move_c_from_table_to_b",
+    "move_d_from_table_to_c",
+    "move_e_from_table_to_d",
+    "move_f_from_table_to_e",
+    "move_g_from_table_to_f",
+    "move_h_from_table_to_g",
+    "move_i_from_table_to_h",
+    "move_j_from_table_to_i",
+    "move_k_from_table_to_j",
+    "move_l_from_table_to_k"
+  ]
+}
