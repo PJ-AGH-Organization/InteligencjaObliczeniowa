@@ -234,8 +234,8 @@ Każdy katalog zawiera:
 **Obserwacje:**
 - Dla 5 klocków przestrzeń stanów wynosi ~500 stanów osiągalnych (522-555)
 - Dla 12 klocków przestrzeń stanów przekracza 10000 (limit pomiaru)
-- Bez heurystyki rozwiązanie problemów dużych **nie było możliwe** w limicie 300s (timeout po ~580-600k węzłów)
-- Z heurystyką mismatch + subgoals problemy duże rozwiązywane są w czasie **0.03s** (55-65 węzłów)
+- Bez heurystyki rozwiązanie problemów dużych **nie było możliwe** w limicie 300s (timeout po ~180-195k węzłów w naszych testach)
+- Z heurystyką mismatch + subgoals problemy duże rozwiązywane są w czasie ~**0.06–0.16s** (39–91 węzłów)
 
 **Wnioski:**
 - Przestrzeń stanów rośnie wykładniczo z liczbą klocków
