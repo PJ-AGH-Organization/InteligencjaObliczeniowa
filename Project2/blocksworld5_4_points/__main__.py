@@ -44,7 +44,7 @@ def _parse_args(argv=None):
     p.add_argument("--out", default="Project2/blocksworld5_4_points/outputs", help="base output directory")
     p.add_argument("--state-limit", type=int, default=10_000, help="cap when counting reachable states")
     p.add_argument("--subgoals", action="store_true", help="solve with subgoals (6-point requirement)")
-    p.add_argument("--large", action="store_true", help="use large problems with 8 blocks (8-point requirement)")
+    p.add_argument("--large", action="store_true", help="use large problems with 12 blocks (8-point requirement)")
     p.add_argument("--timeout", type=float, default=None, help="timeout in seconds (default: no timeout)")
     return p.parse_args(argv)
 

@@ -8,8 +8,8 @@
   "timed_out": false,
   "timeout_seconds": 300.0,
   "total_cost": 20.0,
-  "total_expanded": 65,
-  "time_seconds": 0.03320442400035972,
+  "total_expanded": 39,
+  "time_seconds": 0.05709710100018128,
   "num_subgoals": 3,
   "subgoals_breakdown": [
     {
@@ -33,7 +33,7 @@
     {
       "subgoal_index": 2,
       "cost": 3,
-      "expanded": 6,
+      "expanded": 8,
       "actions": [
         "move_b_from_table_to_a",
         "move_c_from_table_to_b",
@@ -43,12 +43,12 @@
     {
       "subgoal_index": 3,
       "cost": 6,
-      "expanded": 47,
+      "expanded": 19,
       "actions": [
-        "move_f_from_table_to_e",
         "move_j_from_table_to_i",
         "move_k_from_table_to_j",
         "move_l_from_table_to_k",
+        "move_f_from_table_to_e",
         "move_g_from_table_to_f",
         "move_h_from_table_to_g"
       ]
@@ -69,10 +69,10 @@
     "move_b_from_table_to_a",
     "move_c_from_table_to_b",
     "move_d_from_table_to_c",
-    "move_f_from_table_to_e",
     "move_j_from_table_to_i",
     "move_k_from_table_to_j",
     "move_l_from_table_to_k",
+    "move_f_from_table_to_e",
     "move_g_from_table_to_f",
     "move_h_from_table_to_g"
   ]

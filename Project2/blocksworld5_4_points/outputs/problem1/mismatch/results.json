@@ -6,14 +6,14 @@
   "reachable_states_limit": 10000,
   "solved": true,
   "timed_out": false,
-  "timeout_seconds": null,
+  "timeout_seconds": 30.0,
   "cost": 4,
-  "expanded": 7,
-  "time_seconds": 0.0003015489992321818,
+  "expanded": 9,
+  "time_seconds": 0.0009214420001626422,
   "plan": [
-    "move_e_from_d_to_table",
     "move_c_from_a_to_table",
     "move_b_from_table_to_c",
-    "move_a_from_table_to_b"
+    "move_a_from_table_to_b",
+    "move_e_from_d_to_table"
   ]
 }

@@ -6,10 +6,10 @@
   "reachable_states_limit": 10000,
   "solved": true,
   "timed_out": false,
-  "timeout_seconds": null,
+  "timeout_seconds": 30.0,
   "total_cost": 6.0,
   "total_expanded": 9,
-  "time_seconds": 0.0004034039993712213,
+  "time_seconds": 0.0009568509999553498,
   "num_subgoals": 3,
   "subgoals_breakdown": [
     {

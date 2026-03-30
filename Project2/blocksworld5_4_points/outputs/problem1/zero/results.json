@@ -8,12 +8,12 @@
   "timed_out": false,
   "timeout_seconds": 300.0,
   "cost": 4,
-  "expanded": 241,
-  "time_seconds": 0.010913232000348216,
+  "expanded": 319,
+  "time_seconds": 0.03399049100016782,
   "plan": [
     "move_c_from_a_to_table",
     "move_b_from_table_to_c",
-    "move_a_from_table_to_b",
-    "move_e_from_d_to_table"
+    "move_e_from_d_to_table",
+    "move_a_from_table_to_b"
   ]
 }

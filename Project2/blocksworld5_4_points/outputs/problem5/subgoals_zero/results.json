@@ -8,8 +8,8 @@
   "timed_out": true,
   "timeout_seconds": 300.0,
   "total_cost": null,
-  "total_expanded": 596474,
-  "time_seconds": 305.69872130600015,
+  "total_expanded": 194798,
+  "time_seconds": 303.873339923,
   "num_subgoals": 3,
   "subgoals_breakdown": [],
   "total_plan": []
