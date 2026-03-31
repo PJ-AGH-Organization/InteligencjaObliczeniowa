@@ -1,17 +1,3 @@
-"""Compatibility wrapper.
-
-The code for Blocks World (5 blocks) is split into modules:
-- `Project2.blocksworld5.problems`
-- `Project2.blocksworld5.solve`
-- `Project2.blocksworld5.viz`
-
-You can still run this file as a module:
-`uv run python -m Project2.blocksworld5.blocksworld5_aipython`
-
-Preferred entry point (supports `--viz`):
-`uv run python -m Project2.blocksworld5`
-"""
-
 from __future__ import annotations
 
 from .heuristics import goal_mismatch_heur
@@ -21,7 +7,6 @@ from .solve import reachable_state_count, solve_forward
 blocks5_domain = make_domain()
 _problems = make_problems(blocks5_domain)
 
-# Re-export for convenience/backwards compatibility
 problem1 = _problems["problem1"]
 problem2 = _problems["problem2"]
 problem3 = _problems["problem3"]

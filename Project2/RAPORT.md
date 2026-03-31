@@ -187,7 +187,7 @@ Algorytm A* z dopuszczalną heurystyką gwarantuje znalezienie optymalnego rozwi
 
 ## 5. Rozwiązania, wyniki i wizualizacje
 
-Znalezione rozwiązania wraz z wizualizacją kroków rozwiązań oraz dodatkowymi szczegółami znajdują się w katalogu `blocksworld5_4_points/outputs/` w załączonym pliku **.zip**:
+Znalezione rozwiązania wraz z wizualizacją kroków rozwiązań oraz dodatkowymi szczegółami znajdują się w katalogu `blocksworld5/outputs/` w załączonym pliku **.zip**:
 
 - `outputs/problemX/mismatch/` - rozwiązania z heurystyką
 - `outputs/problemX/zero/` - rozwiązania bez heurystyki

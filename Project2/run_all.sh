@@ -1,46 +1,46 @@
 #!/bin/bash
 
-set -e  # Zatrzymaj przy błędzie
+set -e
 
-TIMEOUT=300  # 5 minut timeout
+TIMEOUT=300
 
 echo "=========================================="
-echo "Małe problemy (5 bloków) - 4 punkty"
+echo "Małe problemy (5 bloków)"
 echo "=========================================="
 
 echo ""
 echo ">>> Problem 1-3, heurystyka mismatch"
-uv run python -m Project2.blocksworld5_4_points --problem=all --heur=mismatch --viz
+uv run python -m Project2.blocksworld5 --problem=all --heur=mismatch --viz
 
 echo ""
 echo ">>> Problem 1-3, bez heurystyki (zero)"
-uv run python -m Project2.blocksworld5_4_points --problem=all --heur=zero --viz --timeout=$TIMEOUT
+uv run python -m Project2.blocksworld5 --problem=all --heur=zero --viz --timeout=$TIMEOUT
 
 echo ""
 echo "=========================================="
-echo "Małe problemy z subgoals - 6 punktów"
+echo "Małe problemy z subgoals"
 echo "=========================================="
 
 echo ""
 echo ">>> Problem 1-3, subgoals + mismatch"
-uv run python -m Project2.blocksworld5_4_points --problem=all --heur=mismatch --subgoals --viz
+uv run python -m Project2.blocksworld5 --problem=all --heur=mismatch --subgoals --viz
 
 echo ""
 echo ">>> Problem 1-3, subgoals + zero"
-uv run python -m Project2.blocksworld5_4_points --problem=all --heur=zero --subgoals --viz --timeout=$TIMEOUT
+uv run python -m Project2.blocksworld5 --problem=all --heur=zero --subgoals --viz --timeout=$TIMEOUT
 
 echo ""
 echo "=========================================="
-echo "Duże problemy (12 bloków) - 8 punktów"
+echo "Duże problemy (12 bloków)"
 echo "=========================================="
 
 echo ""
 echo ">>> Problem 4-6, subgoals + mismatch"
-uv run python -m Project2.blocksworld5_4_points --large --subgoals --heur=mismatch --viz --timeout=$TIMEOUT
+uv run python -m Project2.blocksworld5 --large --subgoals --heur=mismatch --viz --timeout=$TIMEOUT
 
 echo ""
 echo ">>> Problem 4-6, subgoals + zero"
-uv run python -m Project2.blocksworld5_4_points --large --subgoals --heur=zero --viz --timeout=$TIMEOUT
+uv run python -m Project2.blocksworld5 --large --subgoals --heur=zero --viz --timeout=$TIMEOUT
 
 echo ""
 echo "=========================================="

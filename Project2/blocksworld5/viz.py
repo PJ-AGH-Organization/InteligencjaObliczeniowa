@@ -1,9 +1,3 @@
-"""Matplotlib visualizations for Blocks World states.
-
-We visualize the *solution path* states (start -> goal), not every expanded node.
-Producing images for all expanded states is usually enormous.
-"""
-
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -19,11 +13,10 @@ StateAssignment = Dict[str, object]
 
 @dataclass(frozen=True)
 class BlocksLayout:
-    stacks: List[List[str]]  # bottom->top per stack
+    stacks: List[List[str]]
 
 
 def _parse_on_relations(state: StateAssignment) -> Dict[str, str]:
-    """Extract mapping block -> support from AIPython blocks world state."""
     on_of: Dict[str, str] = {}
     for key, value in state.items():
         if isinstance(key, str) and key.endswith("_is_on"):
@@ -34,17 +27,14 @@ def _parse_on_relations(state: StateAssignment) -> Dict[str, str]:
 
 
 def _compute_stacks(on_of: Dict[str, str]) -> BlocksLayout:
-    """Compute stacks from on-relations; ignores clear flags."""
     blocks = sorted(on_of.keys())
 
-    # inverse mapping: support -> block on it (there should be at most one)
     above: Dict[str, str] = {}
     for block, support in on_of.items():
         above[support] = block
 
     stacks: List[List[str]] = []
 
-    # find roots (blocks directly on table)
     roots = [b for b in blocks if on_of.get(b) == "table"]
     roots.sort()
 
@@ -59,7 +49,6 @@ def _compute_stacks(on_of: Dict[str, str]) -> BlocksLayout:
             current = nxt
         stacks.append(stack)
 
-    # If a block isn't reachable from any table root (shouldn't happen), place it alone.
     placed = {b for stack in stacks for b in stack}
     for b in blocks:
         if b not in placed:
@@ -74,7 +63,6 @@ def draw_state(
     title: Optional[str] = None,
     figsize: Tuple[float, float] = (8.0, 3.0),
 ):
-    """Return (fig, ax) visualizing a single blocks-world state."""
     on_of = _parse_on_relations(state)
     layout = _compute_stacks(on_of)
 
@@ -83,13 +71,11 @@ def draw_state(
     if title:
         ax.set_title(title)
 
-    # simple geometry
     block_w = 1.0
     block_h = 0.6
     gap_x = 0.6
     base_y = 0.4
 
-    # draw table line
     max_stack_h = max((len(s) for s in layout.stacks), default=1)
     width = len(layout.stacks) * (block_w + gap_x) + gap_x
     height = base_y + (max_stack_h + 1) * block_h
@@ -116,11 +102,6 @@ def save_solution_path_images(
     *,
     pdf_name: str = "solution_path.pdf",
 ) -> Path:
-    """Save PNG frames for each state + a single PDF with all frames.
-
-    states: list of state assignments from start->goal
-    actions: list of action names; if provided, len(actions) = len(states)-1
-    """
     out_dir.mkdir(parents=True, exist_ok=True)
 
     pdf_path = out_dir / pdf_name

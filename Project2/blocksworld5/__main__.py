@@ -1,14 +1,3 @@
-"""Entry point for `python -m Project2.blocksworld5_4_points`.
-
-Examples:
-- Solve all small problems:     uv run python -m Project2.blocksworld5_4_points
-- Solve with subgoals:          uv run python -m Project2.blocksworld5_4_points --subgoals
-- Solve large problems:         uv run python -m Project2.blocksworld5_4_points --large --subgoals
-- Generate visualizations:      uv run python -m Project2.blocksworld5_4_points --viz
-- Without heuristic:            uv run python -m Project2.blocksworld5_4_points --heur zero
-- With timeout:                 uv run python -m Project2.blocksworld5_4_points --timeout 300
-"""
-
 from __future__ import annotations
 
 import argparse
@@ -28,7 +17,6 @@ from .viz import save_solution_path_images
 
 
 def save_results(out_dir: Path, results: dict[str, Any]) -> Path:
-    """Save solve results to JSON file in the output directory."""
     out_dir.mkdir(parents=True, exist_ok=True)
     json_path = out_dir / "results.json"
     with open(json_path, "w", encoding="utf-8") as f:
@@ -37,11 +25,11 @@ def save_results(out_dir: Path, results: dict[str, Any]) -> Path:
 
 
 def _parse_args(argv=None):
-    p = argparse.ArgumentParser(prog="Project2.blocksworld5_4_points")
+    p = argparse.ArgumentParser(prog="Project2.blocksworld5")
     p.add_argument("--problem", default="all", help="problem1|problem2|problem3|all (or problem4|problem5|problem6 with --large)")
     p.add_argument("--heur", default="mismatch", help="mismatch|zero")
     p.add_argument("--viz", action="store_true", help="save PNG frames + one PDF for the solution path")
-    p.add_argument("--out", default="Project2/blocksworld5_4_points/outputs", help="base output directory")
+    p.add_argument("--out", default="Project2/blocksworld5/outputs", help="base output directory")
     p.add_argument("--state-limit", type=int, default=10_000, help="cap when counting reachable states")
     p.add_argument("--subgoals", action="store_true", help="solve with subgoals (6-point requirement)")
     p.add_argument("--large", action="store_true", help="use large problems with 12 blocks (8-point requirement)")
@@ -52,7 +40,6 @@ def _parse_args(argv=None):
 def main(argv=None) -> int:
     args = _parse_args(argv)
 
-    # Select domain and problems based on --large flag
     if args.large:
         domain = make_large_domain()
         problems = make_large_problems(domain)
@@ -86,7 +73,6 @@ def main(argv=None) -> int:
         print(f"{name}: reachable states (<= {args.state_limit} cap) = {n_states}")
 
         if args.subgoals:
-            # 6-point requirement: solve with subgoals
             subgoals = get_subgoals(name)
             initial_state = prob.initial_state
 
@@ -96,7 +82,6 @@ def main(argv=None) -> int:
             print(f"{name} with subgoals ({heur_name}):")
             print(f"  status={status}, total_cost={res.total_cost}, total_expanded={res.total_expanded}, time={res.total_seconds:.3f}s")
 
-            # Prepare results dict
             results: dict[str, Any] = {
                 "problem": name,
                 "mode": "subgoals",
@@ -132,18 +117,16 @@ def main(argv=None) -> int:
             print(f"  wrote results to {json_path}")
 
             if res.solved and args.viz and res.paths:
-                # Combine all states from all subgoal paths
                 all_states = []
                 for path in res.paths:
                     states = extract_state_assignments(path)
                     if all_states:
-                        states = states[1:]  # Skip first state (duplicate of previous end)
+                        states = states[1:]
                     all_states.extend(states)
 
                 pdf = save_solution_path_images(all_states, res.total_plan, out_dir)
                 print(f"  wrote {len(all_states)} frames + {pdf}")
         else:
-            # Standard solving (4-point requirement)
             res = solve_forward(prob, heur=heur, timeout=args.timeout)
 
             status = "TIMEOUT" if res.timed_out else ("solved" if res.solved else "failed")
@@ -151,7 +134,6 @@ def main(argv=None) -> int:
                 f"{name} ({heur_name}): status={status}, cost={res.cost}, expanded={res.expanded}, time={res.seconds:.3f}s"
             )
 
-            # Prepare results dict
             results: dict[str, Any] = {
                 "problem": name,
                 "mode": "standard",

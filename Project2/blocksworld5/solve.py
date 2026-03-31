@@ -1,5 +1,3 @@
-"""Search helpers and heuristics for AIPython forward STRIPS planning."""
-
 from __future__ import annotations
 
 import time
@@ -7,7 +5,7 @@ from collections import deque
 from dataclasses import dataclass
 from typing import Callable, Dict, List, Optional, Set
 
-import Project2  # noqa: F401
+import Project2
 
 from stripsProblem import Planning_problem, STRIPS_domain
 from stripsForwardPlanner import Forward_STRIPS
@@ -16,7 +14,6 @@ from searchProblem import Path
 
 
 class TimeoutSearcherMPP(SearcherMPP):
-    """SearcherMPP with timeout support."""
 
     def __init__(self, problem, timeout: Optional[float] = None):
         super().__init__(problem)
@@ -24,11 +21,9 @@ class TimeoutSearcherMPP(SearcherMPP):
         self.timed_out = False
 
     def search(self):
-        """Search with optional timeout. Returns None if timeout or no solution."""
         start_time = time.perf_counter()
 
         while not self.empty_frontier():
-            # Check timeout
             if self.timeout is not None:
                 elapsed = time.perf_counter() - start_time
                 if elapsed >= self.timeout:
@@ -54,25 +49,13 @@ Goal = Dict[str, object]
 Heuristic = Callable[[StateAssignment, Goal], float]
 SubgoalList = List[Goal]
 
-
-# =============================================================================
-# Heuristics
-# =============================================================================
-
-
 def goal_mismatch_heur(state: StateAssignment, goal: Goal) -> float:
     """Count how many goal conditions are not yet satisfied.
 
-    This heuristic is ADMISSIBLE (never overestimates) because each
+    This heuristic is admissible (never overestimates) because each
     unsatisfied goal requires at least one action to achieve.
     """
     return float(sum(1 for feat, val in goal.items() if state.get(feat) != val))
-
-
-# =============================================================================
-# Path utilities
-# =============================================================================
-
 
 def extract_action_names(path) -> List[str]:
     actions: List[str] = []
@@ -85,15 +68,12 @@ def extract_action_names(path) -> List[str]:
 
 
 def extract_state_assignments(path) -> List[StateAssignment]:
-    """Return state assignments from start->goal along the solution path."""
-    # Path.nodes() yields from end backwards; we reverse for chronological order.
     nodes = list(path.nodes())
     nodes.reverse()
     return [getattr(st, "assignment", st) for st in nodes]
 
 
 def reachable_state_count(problem: Planning_problem, limit: int = 10_000) -> int:
-    """BFS over Forward_STRIPS neighbors; returns number of unique states (capped)."""
     search_problem = Forward_STRIPS(problem)
     start = search_problem.start_node()
 
@@ -129,9 +109,8 @@ def solve_forward(
     heur: Optional[Heuristic] = None,
     timeout: Optional[float] = None,
 ) -> SolveResult:
-    """Run A* (SearcherMPP) on forward STRIPS with optional timeout."""
     if heur is None:
-        heur = lambda *_: 0  # type: ignore[assignment]
+        heur = lambda *_: 0
 
     sp = Forward_STRIPS(problem, heur=heur)
     searcher = TimeoutSearcherMPP(sp, timeout=timeout)
@@ -164,7 +143,6 @@ def solve_forward(
 
 @dataclass(frozen=True)
 class SubgoalSolveResult:
-    """Result of solving a problem with subgoals."""
 
     solved: bool
     total_plan: Optional[List[str]]
@@ -183,18 +161,6 @@ def solve_with_subgoals(
     heur: Optional[Heuristic] = None,
     timeout: Optional[float] = None,
 ) -> SubgoalSolveResult:
-    """Solve a planning problem by decomposing it into subgoals.
-
-    Args:
-        domain: The STRIPS domain
-        initial_state: Starting state assignment
-        subgoals: List of subgoal dicts to achieve in order
-        heur: Optional heuristic function
-        timeout: Optional timeout in seconds (applies to entire solve, not per-subgoal)
-
-    Returns:
-        SubgoalSolveResult with combined plan from all subgoals
-    """
     start_time = time.perf_counter()
     current_state = dict(initial_state)
     total_plan: List[str] = []
@@ -204,13 +170,11 @@ def solve_with_subgoals(
     paths: List[object] = []
 
     for i, subgoal in enumerate(subgoals):
-        # Calculate remaining timeout for this subgoal
         remaining_timeout = None
         if timeout is not None:
             elapsed = time.perf_counter() - start_time
             remaining_timeout = timeout - elapsed
             if remaining_timeout <= 0:
-                # Already timed out
                 total_time = time.perf_counter() - start_time
                 return SubgoalSolveResult(
                     solved=False,
@@ -223,10 +187,8 @@ def solve_with_subgoals(
                     timed_out=True,
                 )
 
-        # Create a sub-problem from current state to this subgoal
         sub_problem = Planning_problem(domain, current_state, subgoal)
 
-        # Solve this sub-problem
         result = solve_forward(sub_problem, heur=heur, timeout=remaining_timeout)
         subgoal_results.append(result)
 
@@ -243,7 +205,6 @@ def solve_with_subgoals(
                 timed_out=result.timed_out,
             )
 
-        # Accumulate results
         if result.plan:
             total_plan.extend(result.plan)
         if result.cost is not None:
@@ -252,7 +213,6 @@ def solve_with_subgoals(
         if result.path is not None:
             paths.append(result.path)
 
-        # Update current state to the final state after this subgoal
         if result.path is not None:
             final_states = extract_state_assignments(result.path)
             if final_states:

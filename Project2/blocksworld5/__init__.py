@@ -1,5 +1,3 @@
-"""Blocks World examples using AIPython STRIPS planning."""
-
 from .problems import (
     make_domain,
     make_large_domain,

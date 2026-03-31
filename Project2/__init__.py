@@ -1,12 +1,3 @@
-"""Project2 package bootstrap.
-
-This repository vendors the AIPython code under `Project2/aipython/`.
-Those modules use *top-level* imports like `from stripsProblem import ...`.
-
-To keep them working when importing from `Project2.*`, we ensure that
-`Project2/aipython/` is on `sys.path`.
-"""
-
 from __future__ import annotations
 
 import os
