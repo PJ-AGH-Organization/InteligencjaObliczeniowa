@@ -1,7 +1,7 @@
 # Raport: Planowanie STRIPS - Blocks World
 
 **Autorzy:** Patrick Bajorski, Jan Banasik
-**Data:** 2026-03-20
+**Data:** 2026-03-31
 
 ---
 
@@ -59,8 +59,6 @@ Heurystyka jest **dopuszczalna** (admissible) w naszym ustawieniu dla celów opi
 1. Cel składa się z przypisań `on(X)` dla wybranych klocków.
 2. Pojedyncza akcja `move_X_from_Y_to_Z` zmienia tylko jedną zmienną typu `on(·)`: dokładnie `on(X)` dla przenoszonego klocka.
 3. Zatem jeden ruch może „naprawić” co najwyżej jeden niespełniony warunek `on(X)` → liczba niespełnionych warunków jest dolnym ograniczeniem liczby ruchów.
-
-Uwaga: jeśli w celu/subcelach uwzględnia się również warunki typu `clear(·)`, wtedy jedna akcja może spełnić więcej niż jeden warunek jednocześnie, więc taka heurystyka **nie musi** być dopuszczalna w pełnej ogólności.
 
 ### 2.3 Wpływ na przeszukiwanie A*
 
