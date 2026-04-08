@@ -6,3 +6,4 @@
 
 ### Projects
 - Project 1: Tic-Tac-Doh game
+- Project 2: Blocksworld5
