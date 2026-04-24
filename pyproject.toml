@@ -7,5 +7,10 @@ requires-python = ">=3.11"
 dependencies = [
     "easyai>=2.0.12",
     "gymnasium>=1.2.3",
+    "jupyter>=1.1.1",
     "matplotlib>=3.8.0",
+    "pygame>=2.6.1",
+    "rich>=15.0.0",
+    "stable-baselines3[extra]>=2.8.0",
+    "tqdm>=4.67.3",
 ]
