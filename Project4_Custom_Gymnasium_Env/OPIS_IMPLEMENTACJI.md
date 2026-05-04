@@ -28,7 +28,7 @@
 11. [Krzywa uczenia](#11-krzywa-uczenia)
 12. [Ewaluacja modelu](#12-ewaluacja-modelu)
 13. [Wizualizacja wyuczonej polityki](#13-wizualizacja-wyuczonej-polityki)
-    - 13.1 [Nagranie GIF](#131-nagranie-gif)
+    - 13.1 [Nagranie wideo (MP4)](#131-nagranie-wideo-mp4)
     - 13.2 [Tryb na żywo (Pygame)](#132-tryb-na-żywo-pygame)
 14. [Wyniki](#14-wyniki)
 15. [Podsumowanie przepływu danych](#15-podsumowanie-przepływu-danych)
@@ -39,7 +39,7 @@
 
 **Rolling Ball Navigator** to autorskie środowisko Gymnasium zaimplementowane na potrzeby Projektu 4 z przedmiotu Inteligencja Obliczeniowa.
 
-Zadanie: kulka tocząca się po dwuwymiarowej planszy musi dotrzeć do wyznaczonego celu (zielonego koła), omijając sześć statycznych prostokątnych przeszkód. Agent **nie zna swojej pozycji absolutnej** — nawiguje wyłącznie na podstawie lokalnych obserwacji:
+Zadanie: kulka tocząca się po dwuwymiarowej planszy musi dotrzeć do wyznaczonego celu (grafika z `sprites/goal.png`, skalowana do promienia `GOAL_RADIUS`), omijając sześć statycznych prostokątnych przeszkód. Kulka jest rysowana z `sprites/agent.png`. Agent **nie zna swojej pozycji absolutnej** — nawiguje wyłącznie na podstawie lokalnych obserwacji:
 
 - bieżącej prędkości,
 - kierunku wektora do celu,
@@ -288,18 +288,18 @@ Indeksy 2–3 razem tworzą **jednostkowy wektor kierunkowy** do celu (długoś�
 | `render_mode="rgb_array"` | Zwraca klatkę jako `ndarray` kształtu `(600, 600, 3)` |
 | `render_mode=None` (domyślny) | Brak renderowania — maksymalna prędkość treningu |
 
-**Elementy wizualne każdej klatki:**
+**Elementy wizualne każdej klatki** (zgodnie z `_render_frame` w notebooku):
 
-| Element | Kolor | Opis |
+| Element | Wizualizacja | Opis |
 |---|---|---|
-| Tło | `(20, 20, 20)` — prawie czarne | |
-| Obramowanie świata | `(220, 220, 220)` — jasne, grubość 3px | |
-| Przeszkody | `(110, 110, 110)` — szare prostokąty | |
-| Promienie czujników | `(180, 40, 40)` — czerwone linie | Od środka kulki do wykrytej ściany/przeszkody |
-| Cel | `(30, 210, 80)` — zielone koło | Promień `GOAL_RADIUS = 18` px |
-| Kulka | `(50, 130, 255)` — niebieskie koło | Promień `BALL_RADIUS = 12` px |
+| Tło | szachownica kafelków 40×40 px, odcienie brązu `(42,33,24)` / `(50,40,29)`, obramowanie kafelka `(28,20,14)` | Prosta tekstura „podłogi” |
+| Obramowanie świata | podwójna ramka `(110,88,64)` oraz `(70,54,38)` | Wewnętrzny obszar gry 600×600 |
+| Przeszkody | wypełnienie `(78,64,48)`, kontury i cienie `(108,90,66)` itd. | Sześć prostokątów z listy `OBSTACLES` |
+| Promienie czujników | linia `(210,158,38)` | Długość z bieżącej obserwacji (znormalizowana × `RAY_MAX`) |
+| Cel | bitmapa `sprites/goal.png` przeskalowana do `(2·GOAL_RADIUS)²` | Pozycja środka: `_goal` |
+| Kulka | bitmapa `sprites/agent.png` przeskalowana do `(2·BALL_RADIUS)²` | Pozycja środka: `_pos` |
 
-Kolejność rysowania (od tyłu do przodu): tło → obramowanie → przeszkody → promienie czujników → cel → kulka.
+Kolejność rysowania (od tyłu do przodu): tło → ramy świata → przeszkody → promienie → cel → kulka.
 
 W trybie `"human"` okno Pygame jest tworzone raz (lazy init przy pierwszym `render_mode="human"` i zachowane między krokami). `pygame.Clock.tick(30)` ogranicza FPS do 30.
 
@@ -427,30 +427,38 @@ Wysoka wariancja liczby kroków (76 kroków std) wynika z losowości pozycji sta
 
 ## 13. Wizualizacja wyuczonej polityki
 
-### 13.1 Nagranie GIF
+### 13.1 Nagranie wideo (MP4)
 
-Nagrywa jeden deterministyczny epizod (ziarno 0) jako animacja GIF:
+Komórka notebooka zapisuje **kilka kolejnych epizodów** w trybie `rgb_array` do pliku `episode.mp4` (`imageio.v2`), 30 FPS, klatka w rozmiarze świata `600×600`:
 
 ```python
+import imageio.v2 as imageio
+from stable_baselines3 import SAC
+
 model   = SAC.load("models/best_model")
 rec_env = RollingBallEnv(render_mode="rgb_array")
 
-obs, _ = rec_env.reset(seed=0)
-frames = [rec_env.render()]
-while not (terminated or truncated):
-    action, _ = model.predict(obs, deterministic=True)
-    obs, _, terminated, truncated, _ = rec_env.step(action)
+frames = []
+for ep in range(5):
+    obs, _ = rec_env.reset(seed=None)
     frames.append(rec_env.render())
+    while True:
+        action, _ = model.predict(obs, deterministic=True)
+        obs, _, terminated, truncated, _ = rec_env.step(action)
+        frames.append(rec_env.render())
+        if terminated or truncated:
+            break
+rec_env.close()
+
+imageio.mimwrite("episode.mp4", frames, fps=30)
 ```
 
-Klatki są skalowane z `600×600` do `300×300` (PIL resize) i zapisywane jako `episode.gif`:
-
-| Parametr GIF | Wartość |
+| Parametr | Wartość |
 |---|---|
-| Docelowy rozmiar | 300×300 px |
-| Czas klatki | 33 ms (≈30 FPS) |
-| Pętla | nieskończona (`loop=0`) |
-| Długość nagranego epizodu | 149 klatek ≈ 5.0 s |
+| Format | MP4 (kodek zależny od `imageio`/FFmpeg w środowisku) |
+| Rozmiar klatki | 600×600 px (bez dodatkowego skalowania) |
+| FPS | 30 |
+| Liczba klatek | zmienna — suma długości nagranych epizodów |
 
 ### 13.2 Tryb na żywo (Pygame)
 
@@ -460,9 +468,11 @@ Osobna komórka uruchamia **10 kolejnych epizodów** w oknie Pygame w czasie rze
 live_env = RollingBallEnv(render_mode="human")
 for episode in range(10):
     obs, _ = live_env.reset()
-    while not (terminated or truncated):
+    while True:
         action, _ = model.predict(obs, deterministic=True)
         obs, _, terminated, truncated, _ = live_env.step(action)
+        if terminated or truncated:
+            break
 ```
 
 Odtwarzanie @ 30 FPS (wymuszane przez `pygame.Clock`). Zamknięcie okna Pygame lub przerwanie kernela kończy pętlę.
@@ -477,7 +487,7 @@ Odtwarzanie @ 30 FPS (wymuszane przez `pygame.Clock`). Zamknięcie okna Pygame l
 | Skuteczność (ewaluacja 30 epizodów) | **100%** |
 | Średnia nagroda epizodu | **54.90 ± 1.56** |
 | Średnia długość epizodu | **123.3 ± 76.2 kroków** |
-| Długość nagranego epizodu (seed=0) | 149 klatek (~5 s) |
+| Nagranie demonstracyjne | `episode.mp4` — kilka epizodów, długość zależy od trajektorii |
 
 Agent osiąga **100% skuteczność** w docieraniu do celu, radząc sobie z każdym losowym układem startowym i celem na planszy z sześcioma przeszkodami.
 

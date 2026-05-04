@@ -16,10 +16,10 @@ Plansza ma wymiary 600×600 pikseli i zawiera 6 statycznych przeszkód prostoką
 
 ### 1.2 Fizyka ruchu
 
-W każdym kroku czasowym prędkość kulki jest aktualizowana zgodnie z uproszczoną fizyką newtonowską:
+W każdym kroku czasowym prędkość kulki jest aktualizowana zgodnie z uproszczoną fizyką newtonowską (w kodzie dodatkowo stosowane jest twarde ograniczenie prędkości do `±V_MAX` po dodaniu przyspieszenia):
 
 ```
-vel  += action * FORCE_SCALE     # (FORCE_SCALE = 0.4)
+vel  = clip(vel + action * FORCE_SCALE, -V_MAX, V_MAX)   # (FORCE_SCALE = 0.4, V_MAX = 8)
 vel  *= FRICTION                 # (FRICTION = 0.92, tłumienie prędkości)
 pos  += vel
 ```
@@ -63,9 +63,9 @@ Epizod kończy się sukcesem (`terminated=True`), gdy środek kulki znajdzie si�
 Środowisko implementuje metodę `render()` obsługującą dwa tryby:
 
 - `"human"` — interaktywne okno pygame do obserwacji działania agenta w czasie rzeczywistym
-- `"rgb_array"` — zwracana macierz pikseli, wykorzystana do nagrywania epizodów w formacie GIF
+- `"rgb_array"` — zwracana macierz pikseli, wykorzystana w notebooku do zapisu nagrania epizodów (plik `episode.mp4`)
 
-W trybie graficznym renderowane są: plansza, przeszkody, kulka, cel oraz czerwone linie reprezentujące promienie sensorów odległości.
+W trybie graficznym renderowane są: plansza (tekstura kafelkowa), przeszkody, sprite kulki (`sprites/agent.png`), sprite celu (`sprites/goal.png`) oraz jasne linie (złotawy kolor) reprezentujące promienie sensorów odległości.
 
 ---
 
