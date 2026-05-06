@@ -67,6 +67,8 @@ Epizod kończy się sukcesem (`terminated=True`), gdy środek kulki znajdzie si�
 
 W trybie graficznym renderowane są: plansza (tekstura kafelkowa), przeszkody, sprite kulki (`sprites/agent.png`), sprite celu (`sprites/goal.png`) oraz jasne linie (złotawy kolor) reprezentujące promienie sensorów odległości.
 
+![GUI](./gui_screenshot.png)
+
 ---
 
 ## 2. Algorytm uczenia
