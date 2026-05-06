@@ -2,6 +2,7 @@
 ## Rolling Ball Navigator
 
 **Autorzy:** Patrick Bajorski, Jan Banasik
+
 **Data:** 06.05.2026
 
 ---
