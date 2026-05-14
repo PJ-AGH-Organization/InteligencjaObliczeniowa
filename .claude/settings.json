@@ -2,7 +2,8 @@
   "permissions": {
     "allow": [
       "Bash(python3 -c ' *)",
-      "Bash(python3)"
+      "Bash(python3)",
+      "Bash(python3 -c \"import json; nb = json.load\\(open\\('/home/patrykb/Semestr6/InteligencjaObliczeniowa/Project5_Continuous_Space/rolling_ball_td3.ipynb'\\)\\); print\\(f'OK — {len\\(nb[\\\\\"cells\\\\\"]\\)} komórek, nbformat={nb[\\\\\"nbformat\\\\\"]}.{nb[\\\\\"nbformat_minor\\\\\"]}'\\)\")"
     ]
   }
 }
