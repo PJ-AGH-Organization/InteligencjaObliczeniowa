@@ -3,7 +3,16 @@
     "allow": [
       "Bash(python3 -c ' *)",
       "Bash(python3)",
-      "Bash(python3 -c \"import json; nb = json.load\\(open\\('/home/patrykb/Semestr6/InteligencjaObliczeniowa/Project5_Continuous_Space/rolling_ball_td3.ipynb'\\)\\); print\\(f'OK — {len\\(nb[\\\\\"cells\\\\\"]\\)} komórek, nbformat={nb[\\\\\"nbformat\\\\\"]}.{nb[\\\\\"nbformat_minor\\\\\"]}'\\)\")"
+      "Bash(python3 -c \"import json; nb = json.load\\(open\\('/home/patrykb/Semestr6/InteligencjaObliczeniowa/Project5_Continuous_Space/rolling_ball_td3.ipynb'\\)\\); print\\(f'OK — {len\\(nb[\\\\\"cells\\\\\"]\\)} komórek, nbformat={nb[\\\\\"nbformat\\\\\"]}.{nb[\\\\\"nbformat_minor\\\\\"]}'\\)\")",
+      "Bash(/home/patrykb/Semestr6/InteligencjaObliczeniowa/.venv/bin/pip list *)",
+      "Bash(/home/patrykb/Semestr6/InteligencjaObliczeniowa/.venv/bin/python -m pip list)",
+      "Bash(/home/patrykb/Semestr6/InteligencjaObliczeniowa/.venv/bin/python -c \"import sys; print\\(sys.version\\); import numpy, matplotlib; print\\('numpy', numpy.__version__\\); print\\('mpl', matplotlib.__version__\\)\")",
+      "Bash(/home/patrykb/Semestr6/InteligencjaObliczeniowa/.venv/bin/python -c \"import gymnasium; print\\('gymnasium', gymnasium.__version__\\)\")",
+      "Bash(/home/patrykb/Semestr6/InteligencjaObliczeniowa/.venv/bin/python -c \"import stable_baselines3; print\\('sb3', stable_baselines3.__version__\\)\")",
+      "Bash(/home/patrykb/Semestr6/InteligencjaObliczeniowa/.venv/bin/python -c \"import sb3_contrib; print\\('sb3_contrib', sb3_contrib.__version__\\)\")",
+      "Bash(/home/patrykb/Semestr6/InteligencjaObliczeniowa/.venv/bin/python -c \"import torch; print\\('torch', torch.__version__\\)\")",
+      "Bash(/home/patrykb/Semestr6/InteligencjaObliczeniowa/.venv/bin/python -c ' *)",
+      "Bash(/home/patrykb/Semestr6/InteligencjaObliczeniowa/.venv/bin/python)"
     ]
   }
 }
