@@ -12,7 +12,10 @@
       "Bash(/home/patrykb/Semestr6/InteligencjaObliczeniowa/.venv/bin/python -c \"import sb3_contrib; print\\('sb3_contrib', sb3_contrib.__version__\\)\")",
       "Bash(/home/patrykb/Semestr6/InteligencjaObliczeniowa/.venv/bin/python -c \"import torch; print\\('torch', torch.__version__\\)\")",
       "Bash(/home/patrykb/Semestr6/InteligencjaObliczeniowa/.venv/bin/python -c ' *)",
-      "Bash(/home/patrykb/Semestr6/InteligencjaObliczeniowa/.venv/bin/python)"
+      "Bash(/home/patrykb/Semestr6/InteligencjaObliczeniowa/.venv/bin/python)",
+      "Bash(pip install *)",
+      "Bash(python3 -c \"import fitz; print\\('fitz ok'\\)\")",
+      "Bash(python3 -c \"import sys; sys.path.insert\\(0,'/home/patrykb/.local/lib/python3.10/site-packages'\\); from pypdf import PdfReader; r=PdfReader\\('MultiAgent.pdf'\\); print\\('\\\\n'.join\\(p.extract_text\\(\\) for p in r.pages\\)\\)\")"
     ]
   }
 }
